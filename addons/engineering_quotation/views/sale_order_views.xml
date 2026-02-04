@@ -1,0 +1,106 @@
+<odoo>
+    <record id="view_order_form_engineering_quotation" model="ir.ui.view">
+        <field name="name">sale.order.form.engineering.quotation</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header/button[@name='action_quotation_send']" position="after">
+    <button name="action_send_quotation_whatsapp"
+            type="object"
+            string="Send Quotation via WhatsApp"
+            icon="fa-whatsapp"
+            class="btn-secondary"
+            invisible="[('state', 'in', ('sale', 'done', 'cancel'))]"/>
+</xpath>
+
+            <!-- 1. إضافة الحقول المحسوبة بشكل مخفي -->
+            <xpath expr="//header" position="before">
+                <field name="show_next_stage_button" invisible="1"/>
+                <field name="next_stage_button_name" invisible="1"/>
+            </xpath>
+            
+            <!-- 2. إضافة حقل المرحلة في الهيدر -->
+            <xpath expr="//header" position="inside">
+                <field name="quotation_stage_id" widget="statusbar" options="{'clickable': '1'}"/>
+            </xpath>
+            
+            <!-- 3. أزرار التحكم في مراحل الـ Quotation -->
+            <!-- الحل المتوافق مع Odoo 17: نستخدم string ثابت و invisible بسيط -->
+            <xpath expr="//button[@name='action_quotation_send']" position="before">
+                <button name="action_move_to_next_stage"
+                        type="object"
+                        string="Move to Next Stage"  
+                        class="oe_highlight"
+                        invisible="[('show_next_stage_button', '=', False)]"
+                        />
+                             <!-- الزر الجديد: إرسال العقد (يظهر فقط في مرحلة معينة) -->
+                <button name="action_create_and_send_contract"
+                        type="object"
+                        string="Send Contract"
+                        class="btn-secondary"
+                        invisible="[('quotation_stage_id.name', '!=', 'التعاقد وجمع الوثائق')]"
+                        />
+            </xpath>
+            
+            <!-- 4. سجل التتبع -->
+            <xpath expr="//page[@name='other_information']" position="inside">
+                <group string="Stage History">
+                    <field name="stage_history_ids" nolabel="1" readonly="1">
+                        <tree>
+                            <field name="from_stage_id"/>
+                            <field name="to_stage_id"/>
+                            <field name="changed_by_id"/>
+                            <field name="change_date"/>
+                        </tree>
+                    </field>
+                </group>
+            </xpath>
+
+        </field>
+    </record>
+
+    <!-- واجهات أخرى (الكانبان) تبقى كما هي، حيث أن attrs مسموح به في قوالب الكانبان -->
+    <record id="view_quotation_tree_engineering" model="ir.ui.view">
+        <field name="name">sale.order.tree.engineering.quotation</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_quotation_tree_with_onboarding"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='state']" position="after">
+                <field name="quotation_stage_id"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="sale_order_kanban_engineering" model="ir.ui.view">
+        <field name="name">sale.order.kanban.engineering</field>
+        <field name="model">sale.order</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="quotation_stage_id" class="o_kanban_small_column">
+                <field name="partner_id"/>
+                <field name="amount_total"/>
+                <field name="building_type"/>
+                <field name="service_type"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div t-attf-class="oe_kanban_global_click">
+                            <div>
+                                <strong><field name="partner_id"/></strong>
+                            </div>
+                            <div>
+                                <field name="building_type"/> / <field name="service_type"/>
+                            </div>
+                            <div>
+                                <field name="amount_total" widget="monetary"/>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="sale.action_quotations_with_onboarding" model="ir.actions.act_window">
+        <field name="view_mode">kanban,tree,form,calendar,pivot,graph,activity</field>
+        <field name="view_id" ref="sale_order_kanban_engineering"/>
+    </record>
+</odoo>

@@ -1,0 +1,88 @@
+<odoo>
+
+    <!-- ============================= -->
+    <!-- Site Visit Report Form View -->
+    <!-- ============================= -->
+    <record id="view_engineering_site_visit_form" model="ir.ui.view">
+        <field name="name">engineering.site.visit.form</field>
+        <field name="model">engineering.site.visit</field>
+        <field name="arch" type="xml">
+            <form>
+
+                <!-- HEADER BUTTON -->
+                <header>
+                    <button name="action_generate_whatsapp_redirect_report"
+                            type="object"
+                            string="إرسال التقرير للمالك"
+                            class="oe_highlight"
+                            icon="fa-whatsapp"
+                            invisible="sent_to_customer"/>
+
+                    <field name="sent_to_customer" readonly="1"/>
+                </header>
+
+                <!-- BODY -->
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="project_id"/>
+                            <field name="task_id"/>
+                            <field name="customer_id"/>
+                        </group>
+
+                        <group>
+                            <field name="visit_date"/>
+                            <field name="visitor_id"/>
+                            <field name="sent_date" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <group string="Report File">
+                        <field name="pdf_report" filename="pdf_filename"/>
+                        <field name="pdf_filename" invisible="1"/>
+                    </group>
+                </sheet>
+
+            </form>
+        </field>
+    </record>
+
+
+    <!-- ================================================= -->
+    <!-- Project Task Form: Button + Site Visit Reports -->
+    <!-- ================================================= -->
+    <record id="view_task_form_add_site_visits" model="ir.ui.view">
+        <field name="name">project.task.form.add.site.visits</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_form2"/>
+        <field name="arch" type="xml">
+
+            <!-- HEADER BUTTON -->
+            <xpath expr="//header" position="inside">
+                <button name="action_create_site_visit_report"
+                        type="object"
+                        string="Create Site Visit Report"
+                        icon="fa-file-pdf-o"
+                        class="btn-primary"
+                        invisible="stage_id.name != 'الإشراف الهندسي'"/>
+            </xpath>
+
+            <!-- TAB -->
+            <xpath expr="//notebook" position="inside">
+                <page string="Site Visit Reports">
+                    <field name="site_visit_report_ids" nolabel="1">
+                        <tree>
+                            <field name="name"/>
+                            <field name="visit_date"/>
+                            <field name="visitor_id"/>
+                            <field name="sent_to_customer"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+
+        </field>
+    </record>
+
+</odoo>

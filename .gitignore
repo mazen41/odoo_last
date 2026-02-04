@@ -1,0 +1,12 @@
+venv/
+odoo/
+debian/
+setup/
+doc/
+__pycache__/
+*.pyc
+*.log
+.idea/
+.vscode/
+*.zip
+*.tar.gz
