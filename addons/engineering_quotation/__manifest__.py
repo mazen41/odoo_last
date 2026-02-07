@@ -15,6 +15,8 @@
         'data/engineering_quotation_stage_data.xml', # ملف المراحل الافتراضية
         'views/engineering_quotation_stage_views.xml',
         'views/sale_order_views.xml', # تعديل شاشة عرض السعر
+        'engineering_reports',
+
     ],
     'installable': True,
     'application': True,
