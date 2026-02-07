@@ -6,17 +6,16 @@
     'category': 'Services/Engineering',
     'version': '17.0.1.0.0',
     'depends': [
-        'engineering_core', # يعتمد على الموديول الأساسي
+        'engineering_core',
         'sale_management',
-        'project', # سنحتاج إليه لربط عرض السعر بالمشروع
+        'project',
+        'engineering_reports',   # ✅ IMPORTANT
     ],
     'data': [
         'security/ir.model.access.csv',
-        'data/engineering_quotation_stage_data.xml', # ملف المراحل الافتراضية
+        'data/engineering_quotation_stage_data.xml',
         'views/engineering_quotation_stage_views.xml',
-        'views/sale_order_views.xml', # تعديل شاشة عرض السعر
-        'engineering_reports',
-
+        'views/sale_order_views.xml',
     ],
     'installable': True,
     'application': True,

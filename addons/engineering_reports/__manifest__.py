@@ -6,8 +6,8 @@
     'category': 'Services/Engineering',
     'version': '17.0.1.0.0',
     'depends': [
-        'engineering_core', 
-        'project', # للربط بنماذج المشروع والمهمة
+        'engineering_core',
+        'project',
     ],
     'data': [
         'security/ir.model.access.csv',
