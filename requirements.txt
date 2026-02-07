@@ -1,46 +1,59 @@
 astroid==2.15.8
 attrs==25.4.0
-Babel==2.10.3 ; python_version >= '3.11'
+Babel==2.10.3
 beautifulsoup4==4.14.3
 cached-property==2.0.1
 certifi==2023.7.22
 cffi>=1.15.1
-chardet==5.2.0 ; python_version >= '3.11'
+chardet==5.2.0
 colorama==0.4.6
-cryptography==42.0.8 ; python_version >= '3.12'
-decorator==5.1.1 ; python_version >= '3.11'
+cryptography==42.0.8
+decorator==5.1.1
 docopt==0.6.2
-docutils==0.20.1 ; python_version >= '3.11'
+docutils==0.20.1
 ebaysdk==2.1.5
-freezegun==1.2.1 ; python_version >= '3.11'
+freezegun==1.2.1
 geoip2==2.9.0
-idna==3.6 ; python_version >= '3.12'
-Jinja2==3.1.2 ; python_version > '3.10'
+idna==3.6
+isodate==0.7.2
+Jinja2==3.1.2
 lazy-object-proxy==1.12.0
-libsass==0.22.0 ; python_version >= '3.11'
-lxml==4.9.3 ; python_version > '3.10' and python_version < '3.12'
-MarkupSafe==2.1.2 ; python_version > '3.10' and python_version < '3.12'
-num2words==0.5.13 ; python_version >= '3.12'
-psutil==5.9.4 ; python_version > '3.10' and python_version < '3.12'
-psycopg2==2.9.5 ; python_version == '3.11'
+libsass==0.22.0
+lxml==4.9.3
+MarkupSafe==2.1.2
+maxminddb==3.0.0
+num2words==0.5.13
+ofxparse==0.21
+passlib==1.7.4
+Pillow==9.4.0
+platformdirs==4.5.1
+polib==1.1.1
+psutil==5.9.4
+psycopg2==2.9.5
 pycparser==3.0
 pydot==1.4.2
-pyopenssl==24.1.0 ; python_version >= '3.12'
-python-dateutil==2.8.2 ; python_version >= '3.11'
-python-stdnum==1.19 ; python_version >= '3.11'
+pyopenssl==24.1.0
+pyparsing==3.3.2
+PyPDF2==2.12.1
+pyserial==3.5
+python-dateutil==2.8.2
+python-stdnum==1.19
 pytz
-qrcode==7.4.2 ; python_version >= '3.11'
-reportlab==3.6.12 ; python_version > '3.10' and python_version < '3.12'
-requests==2.31.0 ; python_version >= '3.11'
-rjsmin==1.2.0 ; python_version >= '3.11'
+pyusb==1.2.1
+qrcode==7.4.2
+reportlab==3.6.12
+requests==2.31.0
+requests-file==3.0.1
+requests-toolbelt==1.0.0
+rjsmin==1.2.0
 six==1.17.0
 soupsieve==2.8.3
 typing_extensions==4.15.0
-urllib3==2.0.7  ; python_version >= '3.12'
+urllib3==2.0.7
 vobject==0.9.6.1
-Werkzeug==2.2.2 ; python_version > '3.10' and python_version < '3.12'
+Werkzeug==2.2.2
 wrapt==1.17.3
-XlsxWriter==3.1.9 ; python_version >= '3.12'
-xlrd==2.0.1 ; python_version >= '3.12'
+xlrd==2.0.1
+XlsxWriter==3.1.9
 xlwt==1.3.0
-zeep==4.2.1 ; python_version >= '3.11' and python_version < '3.13'
+zeep==4.2.1
