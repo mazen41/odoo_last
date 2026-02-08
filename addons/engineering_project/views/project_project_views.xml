@@ -56,8 +56,6 @@
         </record>
 
 
-     <record id="view_project_kanban_engineering" model="ir.ui.view">
-          
         <!-- ===================== -->
         <!-- Task Form -->
         <!-- ===================== -->
@@ -74,7 +72,7 @@
                                 type="object"
                                 string="Send Contract"
                                 class="btn-primary"/>
-                        
+
                         <button name="action_view_parent_project"
                                 type="object"
                                 string="Go to Project"
