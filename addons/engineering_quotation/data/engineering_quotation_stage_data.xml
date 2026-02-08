@@ -1,18 +1,9 @@
 <odoo>
     <data noupdate="0">
 
-        <record id="stage_concept_design" model="engineering.quotation.stage">
-            <field name="name">التصميم المبدئي</field>
-            <field name="sequence">20</field>
-            <field name="next_stage_id" ref="stage_pricing_review"/>
-            <field name="button_name">اعتماد التصميم و التسعير</field>
-        </record>
-
-        <record id="stage_pricing_review" model="engineering.quotation.stage">
-            <field name="name">تسعير ومراجعة</field>
-            <field name="sequence">30</field>
-            <field name="next_stage_id" ref="stage_sent_customer"/>
-            <field name="button_name">إرسال للعميل</field>
+        <record id="stage_waiting_approval" model="engineering.quotation.stage">
+            <field name="name">بانتظار موافقة العميل</field>
+            <field name="sequence">50</field>
         </record>
 
         <record id="stage_sent_customer" model="engineering.quotation.stage">
@@ -22,9 +13,18 @@
             <field name="button_name">متابعة موافقة العميل</field>
         </record>
 
-        <record id="stage_waiting_approval" model="engineering.quotation.stage">
-            <field name="name">بانتظار موافقة العميل</field>
-            <field name="sequence">50</field>
+        <record id="stage_pricing_review" model="engineering.quotation.stage">
+            <field name="name">تسعير ومراجعة</field>
+            <field name="sequence">30</field>
+            <field name="next_stage_id" ref="stage_sent_customer"/>
+            <field name="button_name">إرسال للعميل</field>
+        </record>
+
+        <record id="stage_concept_design" model="engineering.quotation.stage">
+            <field name="name">التصميم المبدئي</field>
+            <field name="sequence">20</field>
+            <field name="next_stage_id" ref="stage_pricing_review"/>
+            <field name="button_name">اعتماد التصميم و التسعير</field>
         </record>
 
         <record id="stage_req_received" model="engineering.quotation.stage">
