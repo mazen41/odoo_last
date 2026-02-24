@@ -11,5 +11,4 @@ class ProductTemplate(models.Model):
 class ProductProduct(models.Model):
     _inherit = 'product.product'
 
-    is_engineering_package = fields.Boolean(string='باقة هندسية (Engineering Package)', default=False)
     engineering_package_id = fields.Many2one('engineering.package', string='الباقة المرتبطة')

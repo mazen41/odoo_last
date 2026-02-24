@@ -151,7 +151,6 @@
     <!-- Menu Items -->
     <menuitem id="menu_engineering_packages_root"
               name="الباقات الهندسية (Engineering Packages)"
-              web_icon="engineering_packages,static/description/icon.png"
               sequence="24"/>
 
     <menuitem id="menu_engineering_packages"

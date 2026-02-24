@@ -3,7 +3,6 @@
     <!-- Main Menu for Engineering Contracts -->
     <menuitem id="menu_engineering_contracts_root"
               name="العقود الهندسية (Engineering Contracts)"
-              web_icon="engineering_contracts,static/description/icon.png"
               sequence="25"/>
 
     <!-- Contracts Menu -->

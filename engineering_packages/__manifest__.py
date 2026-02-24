@@ -18,6 +18,7 @@
         'engineering_core',
         'sale_management',
         'product',
+        'uom',
     ],
     'data': [
         'security/ir.model.access.csv',
