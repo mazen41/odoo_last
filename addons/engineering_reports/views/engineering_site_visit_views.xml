@@ -65,7 +65,7 @@
                         string="Create Site Visit Report"
                         icon="fa-file-pdf-o"
                         class="btn-primary"
-                        invisible="stage_id.name != 'الإشراف الهندسي'"/>
+                        />
             </xpath>
 
             <!-- TAB -->
