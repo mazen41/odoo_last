@@ -34,6 +34,9 @@ class EngineeringQuotationStageHistory(models.Model):
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
 
+    # --- Project Link (replaces sale_project dependency) ---
+    project_id = fields.Many2one('project.project', string='Project', copy=False)
+    
     # --- Stages & History Fields ---
     quotation_stage_id = fields.Many2one(
         'engineering.quotation.stage',

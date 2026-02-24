@@ -8,7 +8,6 @@
     'depends': [
         'engineering_core',
         'sale_management',
-        'sale_project',
         'project',
     ],
     'data': [
