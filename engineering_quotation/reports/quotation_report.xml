@@ -1,0 +1,16 @@
+<odoo>
+    <template id="report_saleorder_document_engineering" inherit_id="sale.report_saleorder_document">
+        <xpath expr="//div[@id='total']" position="after">
+            <div class="row mt-4" style="page-break-inside: avoid;">
+                <div class="col-12">
+                    <div style="border: 1px solid #ddd; padding: 15px; background-color: #f9f9f9;">
+                        <h4 style="text-align: right; border-bottom: 1px solid #ccc; padding-bottom: 5px;">
+                            <strong>المستندات المطلوبة للبدء (Required Documents):</strong>
+                        </h4>
+                        <div t-field="doc.required_documents" style="text-align: right; direction: rtl;"/>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+    </template>
+</odoo>

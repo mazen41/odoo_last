@@ -1,0 +1,25 @@
+<odoo>
+    <record id="view_partner_form_engineering" model="ir.ui.view">
+        <field name="name">res.partner.form.engineering</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='vat']" position="after">
+                <separator string="بيانات المشروع الهندسية (Engineering Info)"/>
+                <group>
+                    <group>
+                        <field name="civil_number"/>
+                        <field name="building_type"/>
+                        <field name="service_type"/>
+                    </group>
+                    <group>
+                        <field name="area"/>
+                        <field name="block_no"/>
+                        <field name="street_no"/>
+                        <field name="plot_no"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,25 @@
+<odoo>
+    <!-- 1. Design & Licensing Contract Report Action -->
+    <record id="action_report_design_contract" model="ir.actions.report">
+        <field name="name">Design &amp; Licensing Agreement (عقد تصميم وترخيص)</field>
+        <field name="model">sale.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">engineering_documents.report_design_contract_template</field>
+        <field name="report_file">engineering_documents.report_design_contract_template</field>
+        <field name="print_report_name">'Design_Contract_%s' % object.name</field>
+        <field name="binding_model_id" ref="sale.model_sale_order"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- 2. Supervision Contract Report Action -->
+    <record id="action_report_supervision_contract" model="ir.actions.report">
+        <field name="name">Supervision Agreement (عقد إشراف هيكل أسود)</field>
+        <field name="model">sale.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">engineering_documents.report_supervision_contract_template</field>
+        <field name="report_file">engineering_documents.report_supervision_contract_template</field>
+        <field name="print_report_name">'Supervision_Contract_%s' % object.name</field>
+        <field name="binding_model_id" ref="sale.model_sale_order"/>
+        <field name="binding_type">report</field>
+    </record>
+</odoo>

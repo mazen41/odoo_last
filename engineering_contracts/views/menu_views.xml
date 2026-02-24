@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Main Menu for Engineering Contracts -->
+    <menuitem id="menu_engineering_contracts_root"
+              name="العقود الهندسية (Engineering Contracts)"
+              web_icon="engineering_contracts,static/description/icon.png"
+              sequence="25"/>
+
+    <!-- Contracts Menu -->
+    <menuitem id="menu_engineering_contracts"
+              name="العقود (Contracts)"
+              parent="menu_engineering_contracts_root"
+              action="action_engineering_contract"
+              sequence="10"/>
+
+    <!-- Contract Templates Menu -->
+    <menuitem id="menu_engineering_contract_templates"
+              name="قوالب العقود (Contract Templates)"
+              parent="menu_engineering_contracts_root"
+              action="action_engineering_contract_template"
+              sequence="20"/>
+</odoo>

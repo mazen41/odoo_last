@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Contract PDF Template -->
+    <template id="report_engineering_contract">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page" dir="rtl" style="font-family: 'Traditional Arabic', Arial, sans-serif;">
+                        <!-- Header -->
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <h1 style="color: #2c3e50;">عقد هندسي</h1>
+                            <h3>Engineering Contract</h3>
+                            <p><strong>رقم العقد:</strong> <span t-field="doc.name"/></p>
+                        </div>
+
+                        <hr style="border: 1px solid #2c3e50;"/>
+
+                        <!-- Contract Parties -->
+                        <div style="margin: 20px 0;">
+                            <h4 style="color: #2c3e50;">أطراف العقد (Contract Parties)</h4>
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <tr>
+                                    <td style="padding: 10px; border: 1px solid #ddd; width: 30%;"><strong>الطرف الأول (المكتب الهندسي)</strong></td>
+                                    <td style="padding: 10px; border: 1px solid #ddd;" t-esc="doc.company_id.name or 'المكتب الهندسي'"/>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 10px; border: 1px solid #ddd;"><strong>الطرف الثاني (العميل)</strong></td>
+                                    <td style="padding: 10px; border: 1px solid #ddd;" t-field="doc.partner_id.name"/>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 10px; border: 1px solid #ddd;"><strong>الرقم المدني</strong></td>
+                                    <td style="padding: 10px; border: 1px solid #ddd;" t-field="doc.civil_number"/>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 10px; border: 1px solid #ddd;"><strong>رقم الهاتف</strong></td>
+                                    <td style="padding: 10px; border: 1px solid #ddd;" t-field="doc.partner_id.phone"/>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <!-- Property Details -->
+                        <div style="margin: 20px 0;">
+                            <h4 style="color: #2c3e50;">بيانات العقار (Property Details)</h4>
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <tr>
+                                    <td style="padding: 10px; border: 1px solid #ddd; width: 25%;"><strong>نوع المبنى</strong></td>
+                                    <td style="padding: 10px; border: 1px solid #ddd;" t-field="doc.building_type"/>
+                                    <td style="padding: 10px; border: 1px solid #ddd; width: 25%;"><strong>نوع الخدمة</strong></td>
+                                    <td style="padding: 10px; border: 1px solid #ddd;" t-field="doc.service_type"/>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 10px; border: 1px solid #ddd;"><strong>رقم القسيمة</strong></td>
+                                    <td style="padding: 10px; border: 1px solid #ddd;" t-field="doc.plot_no"/>
+                                    <td style="padding: 10px; border: 1px solid #ddd;"><strong>القطعة</strong></td>
+                                    <td style="padding: 10px; border: 1px solid #ddd;" t-field="doc.block_no"/>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 10px; border: 1px solid #ddd;"><strong>المنطقة</strong></td>
+                                    <td style="padding: 10px; border: 1px solid #ddd;" t-field="doc.area"/>
+                                    <td style="padding: 10px; border: 1px solid #ddd;"><strong>الشارع</strong></td>
+                                    <td style="padding: 10px; border: 1px solid #ddd;" t-field="doc.street_no"/>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <!-- Contract Details -->
+                        <div style="margin: 20px 0;">
+                            <h4 style="color: #2c3e50;">تفاصيل العقد (Contract Details)</h4>
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <tr>
+                                    <td style="padding: 10px; border: 1px solid #ddd; width: 25%;"><strong>الباقة</strong></td>
+                                    <td style="padding: 10px; border: 1px solid #ddd;" t-field="doc.package_type"/>
+                                    <td style="padding: 10px; border: 1px solid #ddd; width: 25%;"><strong>قيمة العقد</strong></td>
+                                    <td style="padding: 10px; border: 1px solid #ddd;" t-field="doc.contract_amount" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 10px; border: 1px solid #ddd;"><strong>تاريخ العقد</strong></td>
+                                    <td style="padding: 10px; border: 1px solid #ddd;" t-field="doc.contract_date"/>
+                                    <td style="padding: 10px; border: 1px solid #ddd;"><strong>المشروع</strong></td>
+                                    <td style="padding: 10px; border: 1px solid #ddd;" t-field="doc.project_id.name"/>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <!-- Contract Body -->
+                        <div style="margin: 20px 0;">
+                            <h4 style="color: #2c3e50;">نطاق العمل (Scope of Work)</h4>
+                            <div style="padding: 15px; border: 1px solid #ddd; background: #f9f9f9;">
+                                <t t-raw="doc.contract_body"/>
+                            </div>
+                        </div>
+
+                        <!-- Terms and Conditions -->
+                        <t t-if="doc.terms_conditions">
+                            <div style="margin: 20px 0;">
+                                <h4 style="color: #2c3e50;">الشروط والأحكام (Terms &amp; Conditions)</h4>
+                                <div style="padding: 15px; border: 1px solid #ddd; background: #f9f9f9;">
+                                    <t t-raw="doc.terms_conditions"/>
+                                </div>
+                            </div>
+                        </t>
+
+                        <!-- Signatures -->
+                        <div style="margin-top: 50px;">
+                            <table style="width: 100%;">
+                                <tr>
+                                    <td style="width: 50%; text-align: center; padding: 20px;">
+                                        <p><strong>الطرف الأول</strong></p>
+                                        <p>المكتب الهندسي</p>
+                                        <br/><br/>
+                                        <p>التوقيع: _____________________</p>
+                                        <p>التاريخ: _____________________</p>
+                                    </td>
+                                    <td style="width: 50%; text-align: center; padding: 20px;">
+                                        <p><strong>الطرف الثاني</strong></p>
+                                        <p t-field="doc.partner_id.name"/>
+                                        <br/><br/>
+                                        <p>التوقيع: _____________________</p>
+                                        <p>التاريخ: _____________________</p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

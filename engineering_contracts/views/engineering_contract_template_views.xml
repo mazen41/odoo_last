@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Contract Template Form View -->
+    <record id="view_engineering_contract_template_form" model="ir.ui.view">
+        <field name="name">engineering.contract.template.form</field>
+        <field name="model">engineering.contract.template</field>
+        <field name="arch" type="xml">
+            <form string="Contract Template">
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="اسم القالب"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="التصنيف (Classification)">
+                            <field name="building_type"/>
+                            <field name="service_type"/>
+                            <field name="package_type"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="محتوى العقد (Contract Body)">
+                            <field name="contract_body"/>
+                        </page>
+                        <page string="الشروط والأحكام (Terms &amp; Conditions)">
+                            <field name="terms_conditions"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Contract Template Tree View -->
+    <record id="view_engineering_contract_template_tree" model="ir.ui.view">
+        <field name="name">engineering.contract.template.tree</field>
+        <field name="model">engineering.contract.template</field>
+        <field name="arch" type="xml">
+            <tree string="Contract Templates">
+                <field name="name"/>
+                <field name="building_type"/>
+                <field name="service_type"/>
+                <field name="package_type"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Contract Template Action -->
+    <record id="action_engineering_contract_template" model="ir.actions.act_window">
+        <field name="name">قوالب العقود (Contract Templates)</field>
+        <field name="res_model">engineering.contract.template</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

@@ -1,0 +1,59 @@
+<odoo>
+    <record id="view_order_form_engineering_quotation" model="ir.ui.view">
+        <field name="name">sale.order.form.engineering.quotation</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="priority">99</field>
+        <field name="arch" type="xml">
+
+            <!-- Add Custom Stage Bar in header -->
+            <xpath expr="//header" position="inside">
+                <field name="quotation_stage_id" widget="statusbar" options="{'clickable': '1'}"/>
+                <button name="action_move_to_next_stage" type="object" 
+                        string="المرحلة التالية (Next Stage)" class="oe_highlight" 
+                        invisible="not show_next_stage_button"/>
+                <button name="action_create_opening_fee_invoice" 
+                        string="فاتورة فتح ملف 50 د.ك (Opening Fee 50 KD)" 
+                        type="object" class="btn-secondary"/>
+                <button name="action_apply_opening_deduction" 
+                        string="خصم فتح ملف -50 د.ك (Deduct -50 KD)" 
+                        type="object" class="btn-secondary"/>
+                <button name="action_send_quotation_whatsapp" type="object" 
+                        string="واتساب (WhatsApp)" icon="fa-whatsapp" class="btn-success" 
+                        invisible="state in ('done', 'cancel')"/>
+                <button name="action_create_project_from_quotation" type="object" 
+                        string="إنشاء المشروع (Create Project)" class="btn-primary"
+                        invisible="project_id or state == 'cancel'"
+                        confirm="هل تريد إنشاء مشروع لهذا العرض؟"/>
+            </xpath>
+            
+            <!-- Show Required Documents after partner_id -->
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="show_next_stage_button" invisible="1"/>
+                <field name="next_stage_button_name" invisible="1"/>
+                <field name="project_id" invisible="1"/>
+            </xpath>
+
+            <!-- Show Required Documents -->
+            <xpath expr="//field[@name='payment_term_id']" position="after">
+                <separator string="المستندات المطلوبة (Required Documents)"/>
+                <field name="required_documents" readonly="1"/>
+            </xpath>
+
+            <!-- Stage History Tab -->
+            <xpath expr="//page[@name='other_information']" position="inside">
+                <group string="سجل المراحل (Stage History)">
+                    <field name="stage_history_ids" nolabel="1" readonly="1">
+                        <tree>
+                            <field name="from_stage_id"/>
+                            <field name="to_stage_id"/>
+                            <field name="changed_by_id"/>
+                            <field name="change_date"/>
+                        </tree>
+                    </field>
+                </group>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>

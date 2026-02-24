@@ -1,0 +1,24 @@
+<odoo>
+    <record id="crm_lead_view_form_engineering" model="ir.ui.view">
+        <field name="name">crm.lead.form.engineering</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='phone']" position="after">
+                 <separator string="تفاصيل العقار والخدمة"/>
+                 <group>
+                    <group>
+                        <field name="building_type" widget="radio"/>
+                        <field name="service_type" widget="radio"/>
+                    </group>
+                    <group>
+                        <field name="area"/>
+                        <field name="block_no"/>
+                        <field name="street_no"/>
+                        <field name="plot_no"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

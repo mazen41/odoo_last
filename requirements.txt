@@ -1,0 +1,2 @@
+# Python dependencies for Engineering Office ERP modules
+# Odoo.sh will install these automatically

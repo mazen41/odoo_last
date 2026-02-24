@@ -1,0 +1,28 @@
+<odoo>
+    <record id="engineering_quotation_stage_tree_view" model="ir.ui.view">
+        <field name="name">engineering.quotation.stage.tree</field>
+        <field name="model">engineering.quotation.stage</field>
+        <field name="arch" type="xml">
+            <tree editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="next_stage_id"/>
+                <field name="button_name"/>
+                <field name="is_approved_stage"/>
+                <field name="is_rejected_stage"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="engineering_quotation_stage_action" model="ir.actions.act_window">
+        <field name="name">Quotation Stages</field>
+        <field name="res_model">engineering.quotation.stage</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+    
+    <menuitem id="menu_engineering_quotation_stages"
+              name="Quotation Stages"
+              parent="sale.menu_sale_config"
+              action="engineering_quotation_stage_action"
+              sequence="15"/>
+</odoo>

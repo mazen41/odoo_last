@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Extend Project Form to show contracts -->
+    <record id="view_project_form_inherit_contracts" model="ir.ui.view">
+        <field name="name">project.project.form.inherit.contracts</field>
+        <field name="model">project.project</field>
+        <field name="inherit_id" ref="project.edit_project"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_contracts" type="object" class="oe_stat_button" icon="fa-file-text-o">
+                    <field name="contract_count" widget="statinfo" string="العقود"/>
+                </button>
+            </xpath>
+            <xpath expr="//sheet" position="inside">
+                <group string="إنشاء عقد جديد" col="4">
+                    <button name="action_create_contract" string="إنشاء عقد (Create Contract)" 
+                            type="object" class="btn-primary" colspan="2"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

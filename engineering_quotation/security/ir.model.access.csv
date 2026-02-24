@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_engineering_quotation_stage,engineering.quotation.stage.access,model_engineering_quotation_stage,base.group_user,1,1,1,1
+access_engineering_quotation_stage_history,engineering.quotation.stage.history.access,model_engineering_quotation_stage_history,base.group_user,1,1,1,1

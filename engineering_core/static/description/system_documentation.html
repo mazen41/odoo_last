@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دليل نظام المكتب الهندسي - Engineering Office System Guide</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Cairo', 'Traditional Arabic', Arial, sans-serif;
+            direction: rtl;
+            background: #f8f9fa;
+            color: #2c3e50;
+            line-height: 1.8;
+            font-size: 14px;
+        }
+
+        .page-break { page-break-after: always; }
+
+        /* Cover Page */
+        .cover {
+            background: linear-gradient(135deg, #1a5276 0%, #2980b9 50%, #3498db 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 40px;
+        }
+        .cover h1 {
+            font-size: 42px;
+            font-weight: 800;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .cover h2 {
+            font-size: 24px;
+            font-weight: 400;
+            opacity: 0.9;
+            margin-bottom: 40px;
+        }
+        .cover .version {
+            background: rgba(255,255,255,0.2);
+            padding: 10px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+        }
+        .cover .logo-placeholder {
+            width: 120px;
+            height: 120px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+        }
+
+        /* Content */
+        .content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 30px;
+            background: white;
+        }
+
+        /* Table of Contents */
+        .toc {
+            background: #f1f8ff;
+            border: 2px solid #2980b9;
+            border-radius: 12px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+        .toc h2 {
+            color: #1a5276;
+            font-size: 28px;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #2980b9;
+            padding-bottom: 10px;
+        }
+        .toc-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px dotted #bdc3c7;
+            font-size: 15px;
+        }
+        .toc-item:hover { background: rgba(41,128,185,0.05); }
+        .toc-item .num { color: #2980b9; font-weight: 700; margin-left: 10px; }
+
+        /* Section Headers */
+        .section {
+            margin: 40px 0 20px;
+            padding: 20px 0;
+        }
+        .section h2 {
+            font-size: 26px;
+            color: #1a5276;
+            border-right: 5px solid #2980b9;
+            padding-right: 15px;
+            margin-bottom: 15px;
+        }
+        .section h3 {
+            font-size: 20px;
+            color: #2980b9;
+            margin: 20px 0 10px;
+        }
+        .section h4 {
+            font-size: 17px;
+            color: #34495e;
+            margin: 15px 0 8px;
+        }
+
+        /* Info Boxes */
+        .info-box {
+            background: #eaf4fd;
+            border-right: 4px solid #2980b9;
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .warning-box {
+            background: #fef9e7;
+            border-right: 4px solid #f39c12;
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        .success-box {
+            background: #eafaf1;
+            border-right: 4px solid #27ae60;
+            padding: 15px 20px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 13px;
+        }
+        th {
+            background: #1a5276;
+            color: white;
+            padding: 12px 15px;
+            text-align: right;
+            font-weight: 600;
+        }
+        td {
+            padding: 10px 15px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+        tr:nth-child(even) { background: #f8f9fa; }
+        tr:hover { background: #eaf4fd; }
+
+        /* Flow Diagram */
+        .flow {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 20px 0;
+        }
+        .flow-step {
+            background: linear-gradient(135deg, #2980b9, #3498db);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 25px;
+            margin: 5px 0;
+            font-weight: 600;
+            text-align: center;
+            min-width: 280px;
+        }
+        .flow-arrow {
+            font-size: 24px;
+            color: #2980b9;
+            margin: 2px 0;
+        }
+
+        /* Module Cards */
+        .module-card {
+            border: 2px solid #ecf0f1;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            transition: all 0.3s;
+        }
+        .module-card:hover {
+            border-color: #2980b9;
+            box-shadow: 0 4px 15px rgba(41,128,185,0.15);
+        }
+        .module-card h4 {
+            color: #1a5276;
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+        .module-card .tag {
+            display: inline-block;
+            background: #2980b9;
+            color: white;
+            padding: 3px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            margin: 3px;
+        }
+
+        ul { padding-right: 25px; margin: 10px 0; }
+        li { margin: 5px 0; }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge-blue { background: #2980b9; color: white; }
+        .badge-green { background: #27ae60; color: white; }
+        .badge-orange { background: #f39c12; color: white; }
+        .badge-red { background: #e74c3c; color: white; }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #7f8c8d;
+            font-size: 12px;
+            border-top: 1px solid #ecf0f1;
+            margin-top: 40px;
+        }
+
+        @media print {
+            body { background: white; }
+            .content { padding: 20px; }
+            .cover { min-height: auto; padding: 60px 40px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ==================== COVER PAGE ==================== -->
+<div class="cover">
+    <div class="logo-placeholder">🏗️</div>
+    <h1>نظام إدارة المكتب الهندسي</h1>
+    <h2>Engineering Office Management System</h2>
+    <p style="font-size: 18px; margin-bottom: 30px;">دليل شامل لاستخدام وتشغيل النظام</p>
+    <div class="version">الإصدار 17.0.1.0.0 | Odoo 17 ERP</div>
+    <p style="margin-top: 40px; opacity: 0.7;">تاريخ الإعداد: فبراير 2026</p>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ==================== TABLE OF CONTENTS ==================== -->
+<div class="content">
+
+<div class="toc">
+    <h2>📋 فهرس المحتويات</h2>
+    <div class="toc-item"><span><span class="num">1.</span> نظرة عامة على النظام</span></div>
+    <div class="toc-item"><span><span class="num">2.</span> الوحدات (Modules) المثبتة</span></div>
+    <div class="toc-item"><span><span class="num">3.</span> سير العمل الكامل (Complete Workflow)</span></div>
+    <div class="toc-item"><span><span class="num">4.</span> المرحلة الأولى: تسجيل العميل واستقبال الطلب (CRM)</span></div>
+    <div class="toc-item"><span><span class="num">5.</span> المرحلة الثانية: إعداد عرض السعر (Quotation)</span></div>
+    <div class="toc-item"><span><span class="num">6.</span> المرحلة الثالثة: الباقات والمنتجات (Packages)</span></div>
+    <div class="toc-item"><span><span class="num">7.</span> المرحلة الرابعة: التعاقد والتوقيع (Contracts)</span></div>
+    <div class="toc-item"><span><span class="num">8.</span> المرحلة الخامسة: إدارة المشروع (Project)</span></div>
+    <div class="toc-item"><span><span class="num">9.</span> المرحلة السادسة: الوثائق والمستندات (Documents)</span></div>
+    <div class="toc-item"><span><span class="num">10.</span> المرحلة السابعة: تقارير الزيارات الميدانية (Reports)</span></div>
+    <div class="toc-item"><span><span class="num">11.</span> التقارير والطباعة (PDF Reports)</span></div>
+    <div class="toc-item"><span><span class="num">12.</span> التكامل مع واتساب (WhatsApp Integration)</span></div>
+    <div class="toc-item"><span><span class="num">13.</span> بيانات تسجيل الدخول والإعدادات</span></div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ==================== 1. OVERVIEW ==================== -->
+<div class="section">
+    <h2>1. نظرة عامة على النظام</h2>
+    <p>نظام إدارة المكتب الهندسي هو حل متكامل مبني على منصة <strong>Odoo 17 ERP</strong> مخصص لإدارة جميع عمليات المكتب الهندسي بدءاً من استقبال العميل وحتى تسليم المشروع.</p>
+    
+    <div class="info-box">
+        <strong>🎯 الهدف:</strong> أتمتة سير العمل الكامل للمكتب الهندسي مع إمكانية تتبع كل مرحلة من مراحل المشروع وربط جميع الوحدات ببعضها.
+    </div>
+
+    <h3>المميزات الرئيسية:</h3>
+    <ul>
+        <li><strong>إدارة العملاء المحتملين:</strong> تسجيل الاستفسارات وتحويلها لعروض أسعار</li>
+        <li><strong>عروض أسعار ذكية:</strong> باقات جاهزة مع تسعير مرن وPDF احترافي</li>
+        <li><strong>نظام عقود متكامل:</strong> قوالب عقود حسب نوع المبنى مع التوقيع الإلكتروني</li>
+        <li><strong>إدارة المشاريع:</strong> مراحل تلقائية ومتابعة التقدم</li>
+        <li><strong>إدارة الوثائق:</strong> رفع وتنظيم المستندات المطلوبة</li>
+        <li><strong>تقارير الإشراف:</strong> تقارير الزيارات الميدانية مع إرسال واتساب</li>
+        <li><strong>تكامل واتساب:</strong> إرسال العروض والعقود والتقارير عبر واتساب</li>
+    </ul>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ==================== 2. MODULES ==================== -->
+<div class="section">
+    <h2>2. الوحدات المثبتة (7 Modules)</h2>
+    
+    <div class="module-card">
+        <h4>🔧 Engineering Core (الأساسي)</h4>
+        <p>الوحدة الأساسية التي تضيف الحقول المشتركة لجميع الوحدات الأخرى.</p>
+        <span class="tag">نوع العقار</span>
+        <span class="tag">نوع الخدمة</span>
+        <span class="tag">بيانات القسيمة</span>
+        <span class="tag">الرقم المدني</span>
+    </div>
+
+    <div class="module-card">
+        <h4>📋 Engineering Quotation Pipeline (عروض الأسعار)</h4>
+        <p>نظام مراحل مخصص لعروض الأسعار مع سير عمل كامل من الاستقبال حتى الموافقة.</p>
+        <span class="tag">7 مراحل</span>
+        <span class="tag">رسوم فتح ملف 50 د.ك</span>
+        <span class="tag">إنشاء مشروع يدوي</span>
+        <span class="tag">PDF احترافي</span>
+    </div>
+
+    <div class="module-card">
+        <h4>📦 Engineering Packages (الباقات)</h4>
+        <p>نظام باقات الخدمات مع إمكانية تكوين حزم من عدة منتجات.</p>
+        <span class="tag">باقة أساسية</span>
+        <span class="tag">باقة مميزة</span>
+        <span class="tag">باقة ذهبية</span>
+        <span class="tag">باقة إشراف</span>
+    </div>
+
+    <div class="module-card">
+        <h4>📝 Engineering Contracts (العقود)</h4>
+        <p>نظام عقود كامل مع قوالب حسب نوع المبنى والخدمة وإرسال للتوقيع.</p>
+        <span class="tag">قوالب تلقائية</span>
+        <span class="tag">توقيع إلكتروني</span>
+        <span class="tag">واتساب</span>
+        <span class="tag">PDF</span>
+    </div>
+
+    <div class="module-card">
+        <h4>🏗️ Engineering Project (المشاريع)</h4>
+        <p>تعزيز إدارة المشاريع بربطها بعروض الأسعار وإضافة حقول هندسية.</p>
+        <span class="tag">6 مراحل مشروع</span>
+        <span class="tag">ربط بعرض السعر</span>
+    </div>
+
+    <div class="module-card">
+        <h4>📄 Engineering Documents (الوثائق)</h4>
+        <p>إدارة المستندات والوثائق المطلوبة مع إمكانية الإرسال عبر واتساب.</p>
+        <span class="tag">رفع ملفات</span>
+        <span class="tag">عقود PDF</span>
+        <span class="tag">إرسال واتساب</span>
+    </div>
+
+    <div class="module-card">
+        <h4>📊 Engineering Reports (التقارير)</h4>
+        <p>تقارير الزيارات الميدانية والإشراف الهندسي.</p>
+        <span class="tag">تقارير زيارات</span>
+        <span class="tag">إرسال للعميل</span>
+        <span class="tag">واتساب</span>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ==================== 3. WORKFLOW ==================== -->
+<div class="section">
+    <h2>3. سير العمل الكامل</h2>
+    
+    <div class="flow">
+        <div class="flow-step">1️⃣ استقبال استفسار العميل (CRM)</div>
+        <div class="flow-arrow">⬇️</div>
+        <div class="flow-step">2️⃣ إنشاء فرصة وتسجيل البيانات</div>
+        <div class="flow-arrow">⬇️</div>
+        <div class="flow-step">3️⃣ تحويل الفرصة لعرض سعر</div>
+        <div class="flow-arrow">⬇️</div>
+        <div class="flow-step">4️⃣ اختيار الباقة وإعداد عرض السعر</div>
+        <div class="flow-arrow">⬇️</div>
+        <div class="flow-step">5️⃣ إرسال عرض السعر للعميل (PDF/WhatsApp)</div>
+        <div class="flow-arrow">⬇️</div>
+        <div class="flow-step">6️⃣ موافقة العميل ودفع رسوم فتح الملف (50 د.ك)</div>
+        <div class="flow-arrow">⬇️</div>
+        <div class="flow-step">7️⃣ إنشاء المشروع يدوياً من عرض السعر</div>
+        <div class="flow-arrow">⬇️</div>
+        <div class="flow-step">8️⃣ إنشاء العقد وإرساله للتوقيع</div>
+        <div class="flow-arrow">⬇️</div>
+        <div class="flow-step">9️⃣ جمع الوثائق وبدء التصميم</div>
+        <div class="flow-arrow">⬇️</div>
+        <div class="flow-step">🔟 الإشراف الهندسي وتقارير الزيارات</div>
+        <div class="flow-arrow">⬇️</div>
+        <div class="flow-step" style="background: linear-gradient(135deg, #27ae60, #2ecc71);">✅ تسليم المشروع</div>
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ==================== 4. CRM ==================== -->
+<div class="section">
+    <h2>4. تسجيل العميل واستقبال الطلب (CRM)</h2>
+    
+    <h3>كيفية إنشاء فرصة جديدة:</h3>
+    <ol>
+        <li>الذهاب إلى قائمة <strong>CRM</strong> من القائمة الرئيسية</li>
+        <li>النقر على <strong>"إنشاء"</strong> لإضافة فرصة جديدة</li>
+        <li>تعبئة البيانات التالية:</li>
+    </ol>
+
+    <table>
+        <tr><th>الحقل</th><th>الوصف</th><th>النوع</th></tr>
+        <tr><td>اسم العميل</td><td>الاسم الكامل للعميل</td><td>نص</td></tr>
+        <tr><td>رقم الهاتف</td><td>رقم هاتف العميل للتواصل</td><td>رقم</td></tr>
+        <tr><td>نوع العقار</td><td>سكن خاص / تجاري / استثماري / صناعي / جمعيات / مساجد / مخازن / مزارع</td><td>قائمة اختيار</td></tr>
+        <tr><td>نوع الخدمة</td><td>بناء جديد / هدم / تعديل / توسعة / إشراف / ترميم / قواطع / مظلات</td><td>قائمة اختيار</td></tr>
+        <tr><td>رقم القسيمة</td><td>رقم قسيمة الأرض</td><td>نص</td></tr>
+        <tr><td>القطعة</td><td>رقم القطعة</td><td>نص</td></tr>
+        <tr><td>المنطقة</td><td>اسم المنطقة</td><td>نص</td></tr>
+    </table>
+
+    <div class="success-box">
+        <strong>✅ ملاحظة:</strong> جميع هذه الحقول تنتقل تلقائياً عند تحويل الفرصة إلى عرض سعر.
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ==================== 5. QUOTATION ==================== -->
+<div class="section">
+    <h2>5. إعداد عرض السعر (Quotation)</h2>
+    
+    <h3>مراحل عرض السعر (7 مراحل):</h3>
+    <table>
+        <tr><th>#</th><th>المرحلة</th><th>الإجراء التالي</th></tr>
+        <tr><td><span class="badge badge-blue">1</span></td><td>استقبال الطلب</td><td>بدء التصميم المبدئي</td></tr>
+        <tr><td><span class="badge badge-blue">2</span></td><td>التصميم المبدئي</td><td>اعتماد التصميم والتسعير</td></tr>
+        <tr><td><span class="badge badge-blue">3</span></td><td>تسعير ومراجعة</td><td>إرسال للعميل</td></tr>
+        <tr><td><span class="badge badge-orange">4</span></td><td>مرسل للعميل</td><td>متابعة موافقة العميل</td></tr>
+        <tr><td><span class="badge badge-orange">5</span></td><td>بانتظار موافقة العميل</td><td>موافقة (Approve)</td></tr>
+        <tr><td><span class="badge badge-green">6</span></td><td>مقبول – Approved</td><td>إنشاء المشروع والعقد</td></tr>
+        <tr><td><span class="badge badge-red">7</span></td><td>مرفوض / ملغي</td><td>-</td></tr>
+    </table>
+
+    <h3>الأزرار المتاحة في عرض السعر:</h3>
+    <ul>
+        <li><strong>المرحلة التالية (Next Stage):</strong> نقل عرض السعر للمرحلة التالية</li>
+        <li><strong>فاتورة فتح ملف 50 د.ك:</strong> إنشاء فاتورة رسوم فتح الملف</li>
+        <li><strong>خصم فتح ملف -50 د.ك:</strong> خصم المبلغ المدفوع من العقد</li>
+        <li><strong>واتساب (WhatsApp):</strong> إرسال عرض السعر للعميل عبر واتساب</li>
+        <li><strong>إنشاء المشروع (Create Project):</strong> إنشاء مشروع مرتبط بعد الموافقة</li>
+    </ul>
+
+    <h3>المستندات المطلوبة (تلقائية حسب نوع الخدمة):</h3>
+    <table>
+        <tr><th>نوع الخدمة</th><th>المستندات المطلوبة</th></tr>
+        <tr><td>بناء جديد</td><td>البطاقة المدنية + وثيقة الملكية + كتاب التخصيص + مخطط المساحة</td></tr>
+        <tr><td>تعديل / توسعة</td><td>البطاقة المدنية + رخصة البناء الأصلية + المخططات المرخصة + وثيقة البيت</td></tr>
+        <tr><td>هدم</td><td>البطاقة المدنية + براءة ذمة كهرباء وماء + رخصة البناء القديمة</td></tr>
+    </table>
+
+    <div class="warning-box">
+        <strong>⚠️ مهم:</strong> لا يمكن تأكيد عرض السعر إلا بعد وصوله لمرحلة "مقبول – Approved". إنشاء المشروع يتم يدوياً بالضغط على زر "إنشاء المشروع".
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ==================== 6. PACKAGES ==================== -->
+<div class="section">
+    <h2>6. الباقات والمنتجات (Packages)</h2>
+    
+    <h3>أنواع الباقات المتاحة:</h3>
+    <table>
+        <tr><th>الباقة</th><th>الوصف</th><th>الخدمات المشمولة</th></tr>
+        <tr>
+            <td><span class="badge badge-blue">أساسية</span></td>
+            <td>الباقة الأساسية للتصميم والترخيص</td>
+            <td>تصميم معماري + إنشائي + كهربائي + صحي + استخراج رخصة</td>
+        </tr>
+        <tr>
+            <td><span class="badge badge-orange">مميزة</span></td>
+            <td>باقة شاملة مع ديكور</td>
+            <td>كل الأساسية + ديكور داخلي + مناظر طبيعية + إشراف جزئي</td>
+        </tr>
+        <tr>
+            <td><span class="badge badge-green">ذهبية</span></td>
+            <td>الباقة الشاملة الكاملة</td>
+            <td>كل المميزة + إشراف كامل + إدارة مشروع</td>
+        </tr>
+        <tr>
+            <td><span class="badge badge-red">إشراف</span></td>
+            <td>باقة الإشراف الهندسي فقط</td>
+            <td>إشراف على جميع مراحل البناء + تقارير زيارات</td>
+        </tr>
+    </table>
+
+    <h3>كيفية استخدام الباقات:</h3>
+    <ol>
+        <li>الذهاب إلى <strong>الباقات الهندسية</strong> من القائمة الرئيسية</li>
+        <li>اختيار الباقة المناسبة أو إنشاء باقة جديدة</li>
+        <li>تحديد منتجات الباقة (Bundle Products) والمميزات</li>
+        <li>النقر على <strong>"إنشاء منتج"</strong> لتحويل الباقة إلى منتج قابل للبيع</li>
+        <li>في عرض السعر، اختيار الباقة من حقل <strong>"الباقة المختارة"</strong></li>
+    </ol>
+
+    <div class="info-box">
+        <strong>💡 التسعير المرن:</strong> عند اختيار باقة، يتم تعبئة السعر الافتراضي تلقائياً، لكن يمكن للمهندس تعديل السعر يدوياً حسب تعقيد المشروع.
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ==================== 7. CONTRACTS ==================== -->
+<div class="section">
+    <h2>7. نظام العقود (Contracts)</h2>
+    
+    <h3>إنشاء عقد جديد:</h3>
+    <ol>
+        <li>من صفحة المشروع، النقر على <strong>"إنشاء عقد"</strong></li>
+        <li>يتم تعبئة البيانات تلقائياً من المشروع وعرض السعر</li>
+        <li>يتم اختيار قالب العقد تلقائياً حسب نوع المبنى والخدمة</li>
+        <li>مراجعة وتعديل محتوى العقد حسب الحاجة</li>
+    </ol>
+
+    <h3>مراحل العقد:</h3>
+    <table>
+        <tr><th>المرحلة</th><th>الوصف</th><th>الإجراء</th></tr>
+        <tr><td><span class="badge badge-blue">مسودة</span></td><td>العقد قيد الإعداد</td><td>إرسال للتوقيع</td></tr>
+        <tr><td><span class="badge badge-orange">مرسل للتوقيع</span></td><td>تم إرسال العقد للعميل</td><td>تأكيد التوقيع</td></tr>
+        <tr><td><span class="badge badge-green">موقع</span></td><td>تم توقيع العقد</td><td>تفعيل العقد</td></tr>
+        <tr><td><span class="badge badge-green">نشط</span></td><td>العقد ساري المفعول</td><td>إكمال عند انتهاء المشروع</td></tr>
+        <tr><td><span class="badge badge-blue">مكتمل</span></td><td>تم إنهاء العقد</td><td>-</td></tr>
+    </table>
+
+    <h3>قوالب العقود المتاحة:</h3>
+    <p>النظام يحتوي على قوالب عقود جاهزة لكل نوع مبنى وخدمة:</p>
+    <ul>
+        <li>عقد بناء جديد - سكن خاص (أساسية / مميزة / ذهبية)</li>
+        <li>عقد إشراف هندسي - سكن خاص</li>
+        <li>عقد تعديل وإضافة - سكن خاص</li>
+        <li>عقد هدم - سكن خاص</li>
+        <li>عقد بناء جديد - استثماري</li>
+        <li>عقد بناء جديد - تجاري</li>
+        <li>عقد بناء جديد - صناعي</li>
+        <li>عقد مظلات</li>
+        <li>عقد حدائق</li>
+    </ul>
+
+    <div class="success-box">
+        <strong>✅ تلقائي:</strong> عند اختيار نوع المبنى ونوع الخدمة، يتم تحميل قالب العقد المناسب تلقائياً مع تعبئة بيانات العميل والمشروع.
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ==================== 8. PROJECT ==================== -->
+<div class="section">
+    <h2>8. إدارة المشروع (Project Management)</h2>
+    
+    <h3>مراحل المشروع (6 مراحل):</h3>
+    <table>
+        <tr><th>#</th><th>المرحلة</th><th>الوصف</th></tr>
+        <tr><td>1</td><td>التصميم المبدئي (الكروكي)</td><td>إعداد التصميم الأولي والكروكي</td></tr>
+        <tr><td>2</td><td>التعاقد وجمع الوثائق</td><td>توقيع العقد وجمع المستندات المطلوبة</td></tr>
+        <tr><td>3</td><td>الموافقات الخارجية</td><td>الحصول على التراخيص والموافقات</td></tr>
+        <tr><td>4</td><td>التصميمات التفصيلية</td><td>إعداد المخططات التفصيلية النهائية</td></tr>
+        <tr><td>5</td><td>الإشراف الهندسي</td><td>متابعة التنفيذ والإشراف الميداني</td></tr>
+        <tr><td>6</td><td>إنهاء المشروع</td><td>التسليم النهائي وإغلاق الملف</td></tr>
+    </table>
+
+    <h3>معلومات المشروع:</h3>
+    <p>يحتوي المشروع على البيانات التالية المنقولة تلقائياً من عرض السعر:</p>
+    <ul>
+        <li>اسم العميل ومعلومات الاتصال</li>
+        <li>نوع المبنى ونوع الخدمة</li>
+        <li>بيانات القسيمة والقطعة والمنطقة</li>
+        <li>عرض السعر المرتبط</li>
+        <li>عدد العقود المرتبطة (زر إحصائي)</li>
+    </ul>
+</div>
+
+<!-- ==================== 9. DOCUMENTS ==================== -->
+<div class="section">
+    <h2>9. إدارة الوثائق والمستندات</h2>
+    
+    <p>وحدة الوثائق تتيح رفع وتنظيم جميع المستندات المتعلقة بالمشروع والعميل.</p>
+    
+    <h3>أنواع المستندات:</h3>
+    <ul>
+        <li>البطاقة المدنية للمالك</li>
+        <li>وثيقة الملكية</li>
+        <li>كتاب التخصيص</li>
+        <li>المخططات الأصلية</li>
+        <li>رخصة البناء</li>
+        <li>براءة ذمة الخدمات</li>
+        <li>العقود الموقعة</li>
+    </ul>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ==================== 10. REPORTS ==================== -->
+<div class="section">
+    <h2>10. تقارير الزيارات الميدانية</h2>
+    
+    <h3>إنشاء تقرير زيارة:</h3>
+    <ol>
+        <li>من المهمة المرتبطة بالمشروع، إنشاء تقرير زيارة جديد</li>
+        <li>تحديد تاريخ الزيارة والمهندس المسؤول</li>
+        <li>رفع ملف PDF للتقرير</li>
+        <li>إرسال التقرير للعميل عبر واتساب</li>
+    </ol>
+</div>
+
+<!-- ==================== 11. PDF REPORTS ==================== -->
+<div class="section">
+    <h2>11. التقارير والطباعة (PDF Reports)</h2>
+    
+    <h3>التقارير المتاحة:</h3>
+    <table>
+        <tr><th>التقرير</th><th>النموذج</th><th>الوصف</th></tr>
+        <tr><td>عرض السعر الهندسي</td><td>sale.order</td><td>PDF احترافي لعرض السعر مع الهوية البصرية</td></tr>
+        <tr><td>عقد تصميم وترخيص</td><td>sale.order</td><td>عقد التصميم والترخيص القابل للطباعة</td></tr>
+        <tr><td>عقد إشراف هندسي</td><td>sale.order</td><td>عقد الإشراف الهندسي</td></tr>
+        <tr><td>عقد المشروع</td><td>engineering.contract</td><td>العقد الرسمي من نظام العقود</td></tr>
+    </table>
+
+    <div class="warning-box">
+        <strong>⚠️ متطلب:</strong> لطباعة PDF يجب تثبيت <strong>wkhtmltopdf</strong> على الخادم. يمكن تحميله من: <code>https://wkhtmltopdf.org/downloads.html</code>
+    </div>
+</div>
+
+<!-- ==================== 12. WHATSAPP ==================== -->
+<div class="section">
+    <h2>12. التكامل مع واتساب (WhatsApp)</h2>
+    
+    <p>النظام يوفر إمكانية إرسال الرسائل والمستندات عبر واتساب من عدة أماكن:</p>
+
+    <table>
+        <tr><th>المكان</th><th>الإجراء</th></tr>
+        <tr><td>عرض السعر</td><td>إرسال رابط عرض السعر للعميل</td></tr>
+        <tr><td>العقود</td><td>إرسال العقد ورابط التوقيع للعميل</td></tr>
+        <tr><td>الوثائق</td><td>إرسال المستندات للعميل</td></tr>
+        <tr><td>تقارير الزيارات</td><td>إرسال تقرير الزيارة الميدانية</td></tr>
+    </table>
+
+    <div class="info-box">
+        <strong>💡 كيف يعمل:</strong> عند الضغط على زر واتساب، يتم فتح واتساب ويب في نافذة جديدة مع رسالة جاهزة تحتوي على المعلومات ذات الصلة. يجب أن يكون رقم هاتف العميل مسجلاً في النظام.
+    </div>
+</div>
+
+<div class="page-break"></div>
+
+<!-- ==================== 13. LOGIN ==================== -->
+<div class="section">
+    <h2>13. بيانات تسجيل الدخول والإعدادات</h2>
+    
+    <table>
+        <tr><th>البيان</th><th>القيمة</th></tr>
+        <tr><td>رابط النظام</td><td><code>http://localhost:8069</code></td></tr>
+        <tr><td>قاعدة البيانات</td><td><code>odoo</code></td></tr>
+        <tr><td>البريد الإلكتروني</td><td><code>admin</code></td></tr>
+        <tr><td>كلمة المرور</td><td><code>admin</code></td></tr>
+        <tr><td>كلمة المرور الرئيسية</td><td><code>admin</code></td></tr>
+        <tr><td>إصدار Odoo</td><td>17.0</td></tr>
+        <tr><td>قاعدة البيانات</td><td>PostgreSQL 17</td></tr>
+    </table>
+
+    <div class="warning-box">
+        <strong>⚠️ أمان:</strong> يُنصح بتغيير كلمات المرور الافتراضية قبل نشر النظام في بيئة الإنتاج.
+    </div>
+</div>
+
+<footer>
+    <p>نظام إدارة المكتب الهندسي | Engineering Office Management System</p>
+    <p>مبني على Odoo 17 ERP | جميع الحقوق محفوظة © 2026</p>
+</footer>
+
+</div>
+</body>
+</html>

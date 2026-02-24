@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Contract Templates for Private Housing (سكن خاص) -->
+        <record id="template_residential_new_basic" model="engineering.contract.template">
+            <field name="name">عقد بناء جديد - سكن خاص - الباقة الأساسية</field>
+            <field name="building_type">residential</field>
+            <field name="service_type">new_construction</field>
+            <field name="package_type">basic</field>
+            <field name="contract_body"><![CDATA[
+<div dir="rtl" style="font-family: 'Traditional Arabic', Arial; font-size: 14pt;">
+    <h2 style="text-align: center;">عقد تصميم وترخيص - الباقة الأساسية</h2>
+    <h3 style="text-align: center;">سكن خاص - بناء جديد</h3>
+    <hr/>
+    <p><strong>الطرف الأول (المكتب الهندسي):</strong> ____________________</p>
+    <p><strong>الطرف الثاني (المالك):</strong> ____________________</p>
+    <p><strong>الرقم المدني:</strong> ____________________</p>
+    <p><strong>رقم القسيمة:</strong> ____________________</p>
+    <p><strong>القطعة:</strong> ____________________</p>
+    <p><strong>المنطقة:</strong> ____________________</p>
+    <hr/>
+    <h4>نطاق العمل:</h4>
+    <ul>
+        <li>إعداد التصميم المعماري</li>
+        <li>إعداد التصميم الإنشائي</li>
+        <li>إعداد التصميم الكهربائي</li>
+        <li>إعداد التصميم الصحي</li>
+        <li>استخراج رخصة البناء</li>
+    </ul>
+</div>
+            ]]></field>
+        </record>
+
+        <record id="template_residential_new_premium" model="engineering.contract.template">
+            <field name="name">عقد بناء جديد - سكن خاص - الباقة المميزة</field>
+            <field name="building_type">residential</field>
+            <field name="service_type">new_construction</field>
+            <field name="package_type">premium</field>
+            <field name="contract_body"><![CDATA[
+<div dir="rtl" style="font-family: 'Traditional Arabic', Arial; font-size: 14pt;">
+    <h2 style="text-align: center;">عقد تصميم وترخيص - الباقة المميزة</h2>
+    <h3 style="text-align: center;">سكن خاص - بناء جديد</h3>
+    <hr/>
+    <p><strong>الطرف الأول (المكتب الهندسي):</strong> ____________________</p>
+    <p><strong>الطرف الثاني (المالك):</strong> ____________________</p>
+    <hr/>
+    <h4>نطاق العمل:</h4>
+    <ul>
+        <li>إعداد التصميم المعماري المتكامل</li>
+        <li>إعداد التصميم الإنشائي</li>
+        <li>إعداد التصميم الكهربائي والميكانيكي</li>
+        <li>إعداد التصميم الصحي</li>
+        <li>تصميم الديكور الداخلي</li>
+        <li>تصميم المناظر الطبيعية</li>
+        <li>استخراج رخصة البناء</li>
+        <li>الإشراف الهندسي الجزئي</li>
+    </ul>
+</div>
+            ]]></field>
+        </record>
+
+        <record id="template_residential_new_gold" model="engineering.contract.template">
+            <field name="name">عقد بناء جديد - سكن خاص - الباقة الذهبية</field>
+            <field name="building_type">residential</field>
+            <field name="service_type">new_construction</field>
+            <field name="package_type">gold</field>
+            <field name="contract_body"><![CDATA[
+<div dir="rtl" style="font-family: 'Traditional Arabic', Arial; font-size: 14pt;">
+    <h2 style="text-align: center;">عقد تصميم وترخيص - الباقة الذهبية</h2>
+    <h3 style="text-align: center;">سكن خاص - بناء جديد</h3>
+    <hr/>
+    <h4>نطاق العمل الشامل:</h4>
+    <ul>
+        <li>إعداد التصميم المعماري الفاخر</li>
+        <li>إعداد التصميم الإنشائي</li>
+        <li>إعداد جميع التصاميم الكهربائية والميكانيكية</li>
+        <li>تصميم الديكور الداخلي الكامل</li>
+        <li>تصميم المناظر الطبيعية والحدائق</li>
+        <li>استخراج جميع التراخيص</li>
+        <li>الإشراف الهندسي الكامل</li>
+        <li>إدارة المشروع</li>
+    </ul>
+</div>
+            ]]></field>
+        </record>
+
+        <record id="template_residential_supervision" model="engineering.contract.template">
+            <field name="name">عقد إشراف هندسي - سكن خاص</field>
+            <field name="building_type">residential</field>
+            <field name="service_type">supervision_only</field>
+            <field name="package_type">supervision</field>
+            <field name="contract_body"><![CDATA[
+<div dir="rtl" style="font-family: 'Traditional Arabic', Arial; font-size: 14pt;">
+    <h2 style="text-align: center;">عقد إشراف هندسي</h2>
+    <h3 style="text-align: center;">سكن خاص</h3>
+    <hr/>
+    <h4>نطاق الإشراف:</h4>
+    <ul>
+        <li>الإشراف على أعمال الحفر والأساسات</li>
+        <li>الإشراف على الأعمال الإنشائية</li>
+        <li>الإشراف على الأعمال الكهربائية والصحية</li>
+        <li>الإشراف على أعمال التشطيبات</li>
+        <li>إعداد تقارير الزيارات الميدانية</li>
+        <li>التنسيق مع الجهات الرسمية</li>
+    </ul>
+</div>
+            ]]></field>
+        </record>
+
+        <record id="template_residential_modification" model="engineering.contract.template">
+            <field name="name">عقد تعديل وإضافة - سكن خاص</field>
+            <field name="building_type">residential</field>
+            <field name="service_type">modification</field>
+            <field name="contract_body"><![CDATA[
+<div dir="rtl" style="font-family: 'Traditional Arabic', Arial; font-size: 14pt;">
+    <h2 style="text-align: center;">عقد تعديل وإضافة</h2>
+    <h3 style="text-align: center;">سكن خاص</h3>
+    <hr/>
+    <h4>نطاق العمل:</h4>
+    <ul>
+        <li>دراسة الوضع الراهن</li>
+        <li>إعداد مخططات التعديل</li>
+        <li>استخراج رخصة التعديل</li>
+        <li>الإشراف على التنفيذ</li>
+    </ul>
+</div>
+            ]]></field>
+        </record>
+
+        <record id="template_residential_demolition" model="engineering.contract.template">
+            <field name="name">عقد هدم - سكن خاص</field>
+            <field name="building_type">residential</field>
+            <field name="service_type">demolition</field>
+            <field name="contract_body"><![CDATA[
+<div dir="rtl" style="font-family: 'Traditional Arabic', Arial; font-size: 14pt;">
+    <h2 style="text-align: center;">عقد هدم</h2>
+    <h3 style="text-align: center;">سكن خاص</h3>
+    <hr/>
+    <h4>نطاق العمل:</h4>
+    <ul>
+        <li>إعداد مخططات الهدم</li>
+        <li>استخراج رخصة الهدم</li>
+        <li>التنسيق مع الجهات المعنية</li>
+        <li>الإشراف على عملية الهدم</li>
+    </ul>
+</div>
+            ]]></field>
+        </record>
+
+        <!-- Investment Building Templates -->
+        <record id="template_investment_new" model="engineering.contract.template">
+            <field name="name">عقد بناء جديد - استثماري</field>
+            <field name="building_type">investment</field>
+            <field name="service_type">new_construction</field>
+            <field name="contract_body"><![CDATA[
+<div dir="rtl" style="font-family: 'Traditional Arabic', Arial; font-size: 14pt;">
+    <h2 style="text-align: center;">عقد تصميم وترخيص</h2>
+    <h3 style="text-align: center;">مبنى استثماري</h3>
+    <hr/>
+    <h4>نطاق العمل:</h4>
+    <ul>
+        <li>إعداد التصميم المعماري للمبنى الاستثماري</li>
+        <li>إعداد التصميم الإنشائي</li>
+        <li>إعداد تصاميم الخدمات (كهرباء، ميكانيكا، صحي)</li>
+        <li>استخراج رخصة البناء</li>
+        <li>الإشراف الهندسي</li>
+    </ul>
+</div>
+            ]]></field>
+        </record>
+
+        <!-- Commercial Building Templates -->
+        <record id="template_commercial_new" model="engineering.contract.template">
+            <field name="name">عقد بناء جديد - تجاري</field>
+            <field name="building_type">commercial</field>
+            <field name="service_type">new_construction</field>
+            <field name="contract_body"><![CDATA[
+<div dir="rtl" style="font-family: 'Traditional Arabic', Arial; font-size: 14pt;">
+    <h2 style="text-align: center;">عقد تصميم وترخيص</h2>
+    <h3 style="text-align: center;">مبنى تجاري</h3>
+    <hr/>
+    <h4>نطاق العمل:</h4>
+    <ul>
+        <li>إعداد التصميم المعماري للمبنى التجاري</li>
+        <li>إعداد التصميم الإنشائي</li>
+        <li>إعداد تصاميم الخدمات</li>
+        <li>تصميم أنظمة السلامة والإطفاء</li>
+        <li>استخراج رخصة البناء</li>
+    </ul>
+</div>
+            ]]></field>
+        </record>
+
+        <!-- Industrial Building Templates -->
+        <record id="template_industrial_new" model="engineering.contract.template">
+            <field name="name">عقد بناء جديد - صناعي</field>
+            <field name="building_type">industrial</field>
+            <field name="service_type">new_construction</field>
+            <field name="contract_body"><![CDATA[
+<div dir="rtl" style="font-family: 'Traditional Arabic', Arial; font-size: 14pt;">
+    <h2 style="text-align: center;">عقد تصميم وترخيص</h2>
+    <h3 style="text-align: center;">مبنى صناعي</h3>
+    <hr/>
+    <h4>نطاق العمل:</h4>
+    <ul>
+        <li>إعداد التصميم المعماري للمنشأة الصناعية</li>
+        <li>إعداد التصميم الإنشائي</li>
+        <li>إعداد تصاميم الخدمات الصناعية</li>
+        <li>استخراج التراخيص الصناعية</li>
+    </ul>
+</div>
+            ]]></field>
+        </record>
+
+        <!-- Shades Templates -->
+        <record id="template_shades" model="engineering.contract.template">
+            <field name="name">عقد مظلات</field>
+            <field name="building_type">shades</field>
+            <field name="service_type">shades_garden</field>
+            <field name="contract_body"><![CDATA[
+<div dir="rtl" style="font-family: 'Traditional Arabic', Arial; font-size: 14pt;">
+    <h2 style="text-align: center;">عقد تصميم وتنفيذ مظلات</h2>
+    <hr/>
+    <h4>نطاق العمل:</h4>
+    <ul>
+        <li>تصميم المظلات</li>
+        <li>استخراج التراخيص اللازمة</li>
+        <li>الإشراف على التنفيذ</li>
+    </ul>
+</div>
+            ]]></field>
+        </record>
+
+        <!-- Garden Templates -->
+        <record id="template_garden" model="engineering.contract.template">
+            <field name="name">عقد حدائق</field>
+            <field name="building_type">garden</field>
+            <field name="service_type">shades_garden</field>
+            <field name="contract_body"><![CDATA[
+<div dir="rtl" style="font-family: 'Traditional Arabic', Arial; font-size: 14pt;">
+    <h2 style="text-align: center;">عقد تصميم حدائق</h2>
+    <hr/>
+    <h4>نطاق العمل:</h4>
+    <ul>
+        <li>تصميم المناظر الطبيعية</li>
+        <li>تصميم نظام الري</li>
+        <li>اختيار النباتات المناسبة</li>
+        <li>الإشراف على التنفيذ</li>
+    </ul>
+</div>
+            ]]></field>
+        </record>
+
+    </data>
+</odoo>

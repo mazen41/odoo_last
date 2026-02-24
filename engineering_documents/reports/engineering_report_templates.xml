@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Design & Licensing Contract QWeb Template -->
+    <template id="report_design_contract_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page" dir="rtl" style="font-family: 'Traditional Arabic', Arial, sans-serif;">
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <h1 style="color: #2c3e50;">عقد تصميم وترخيص</h1>
+                            <h3>Design &amp; Licensing Agreement</h3>
+                            <p><strong>رقم العرض:</strong> <span t-field="doc.name"/></p>
+                        </div>
+                        <hr/>
+                        <div style="margin: 20px 0;">
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <tr>
+                                    <td style="padding: 8px; border: 1px solid #ddd;"><strong>العميل:</strong></td>
+                                    <td style="padding: 8px; border: 1px solid #ddd;" t-field="doc.partner_id.name"/>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px; border: 1px solid #ddd;"><strong>نوع المبنى:</strong></td>
+                                    <td style="padding: 8px; border: 1px solid #ddd;" t-field="doc.building_type"/>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px; border: 1px solid #ddd;"><strong>نوع الخدمة:</strong></td>
+                                    <td style="padding: 8px; border: 1px solid #ddd;" t-field="doc.service_type"/>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px; border: 1px solid #ddd;"><strong>الإجمالي:</strong></td>
+                                    <td style="padding: 8px; border: 1px solid #ddd;" t-field="doc.amount_total" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                </tr>
+                            </table>
+                        </div>
+                        <div style="margin-top: 40px; text-align: center;">
+                            <table style="width: 100%;">
+                                <tr>
+                                    <td style="width: 50%; text-align: center;"><p><strong>الطرف الأول</strong></p><br/><p>التوقيع: ___________</p></td>
+                                    <td style="width: 50%; text-align: center;"><p><strong>الطرف الثاني</strong></p><br/><p>التوقيع: ___________</p></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <!-- Supervision Contract QWeb Template -->
+    <template id="report_supervision_contract_template">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page" dir="rtl" style="font-family: 'Traditional Arabic', Arial, sans-serif;">
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <h1 style="color: #2c3e50;">عقد إشراف هندسي</h1>
+                            <h3>Engineering Supervision Agreement</h3>
+                            <p><strong>رقم العرض:</strong> <span t-field="doc.name"/></p>
+                        </div>
+                        <hr/>
+                        <div style="margin: 20px 0;">
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <tr>
+                                    <td style="padding: 8px; border: 1px solid #ddd;"><strong>العميل:</strong></td>
+                                    <td style="padding: 8px; border: 1px solid #ddd;" t-field="doc.partner_id.name"/>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px; border: 1px solid #ddd;"><strong>نوع المبنى:</strong></td>
+                                    <td style="padding: 8px; border: 1px solid #ddd;" t-field="doc.building_type"/>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 8px; border: 1px solid #ddd;"><strong>الإجمالي:</strong></td>
+                                    <td style="padding: 8px; border: 1px solid #ddd;" t-field="doc.amount_total" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                </tr>
+                            </table>
+                        </div>
+                        <div style="margin-top: 40px; text-align: center;">
+                            <table style="width: 100%;">
+                                <tr>
+                                    <td style="width: 50%; text-align: center;"><p><strong>الطرف الأول</strong></p><br/><p>التوقيع: ___________</p></td>
+                                    <td style="width: 50%; text-align: center;"><p><strong>الطرف الثاني</strong></p><br/><p>التوقيع: ___________</p></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Professional Engineering Quotation PDF Template -->
+    <template id="report_engineering_quotation">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page" dir="rtl" style="font-family: 'Traditional Arabic', Arial, sans-serif;">
+                        
+                        <!-- Header -->
+                        <div style="text-align: center; margin-bottom: 30px; border-bottom: 3px solid #2c3e50; padding-bottom: 20px;">
+                            <h1 style="color: #2c3e50; margin-bottom: 10px;">عرض سعر هندسي</h1>
+                            <h2 style="color: #7f8c8d;">Engineering Quotation</h2>
+                            <p style="font-size: 18pt; margin-top: 15px;">
+                                <strong>رقم العرض:</strong> <span t-field="doc.name"/>
+                            </p>
+                            <p><strong>التاريخ:</strong> <span t-field="doc.date_order" t-options='{"widget": "date"}'/></p>
+                        </div>
+
+                        <!-- Customer & Property Info -->
+                        <div style="display: flex; margin-bottom: 30px;">
+                            <div style="width: 50%; padding-left: 15px;">
+                                <h4 style="color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 5px;">بيانات العميل (Customer Info)</h4>
+                                <table style="width: 100%;">
+                                    <tr>
+                                        <td style="padding: 5px;"><strong>الاسم:</strong></td>
+                                        <td style="padding: 5px;" t-field="doc.partner_id.name"/>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 5px;"><strong>الهاتف:</strong></td>
+                                        <td style="padding: 5px;" t-field="doc.partner_id.phone"/>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 5px;"><strong>البريد:</strong></td>
+                                        <td style="padding: 5px;" t-field="doc.partner_id.email"/>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div style="width: 50%; padding-right: 15px;">
+                                <h4 style="color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 5px;">بيانات العقار (Property Info)</h4>
+                                <table style="width: 100%;">
+                                    <tr>
+                                        <td style="padding: 5px;"><strong>نوع المبنى:</strong></td>
+                                        <td style="padding: 5px;" t-field="doc.building_type"/>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 5px;"><strong>نوع الخدمة:</strong></td>
+                                        <td style="padding: 5px;" t-field="doc.service_type"/>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 5px;"><strong>رقم القسيمة:</strong></td>
+                                        <td style="padding: 5px;" t-field="doc.plot_no"/>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 5px;"><strong>القطعة:</strong></td>
+                                        <td style="padding: 5px;" t-field="doc.block_no"/>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 5px;"><strong>المنطقة:</strong></td>
+                                        <td style="padding: 5px;" t-field="doc.area"/>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Quotation Stage -->
+                        <div style="margin-bottom: 20px; padding: 10px; background: #ecf0f1; border-radius: 5px;">
+                            <strong>حالة العرض:</strong> 
+                            <span t-field="doc.quotation_stage_id.name" style="color: #27ae60; font-weight: bold;"/>
+                        </div>
+
+                        <!-- Order Lines -->
+                        <h4 style="color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 5px; margin-top: 30px;">
+                            تفاصيل الخدمات والأسعار (Services &amp; Pricing)
+                        </h4>
+                        <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                            <thead>
+                                <tr style="background: #2c3e50; color: white;">
+                                    <th style="padding: 12px; text-align: right; border: 1px solid #2c3e50;">#</th>
+                                    <th style="padding: 12px; text-align: right; border: 1px solid #2c3e50;">الوصف (Description)</th>
+                                    <th style="padding: 12px; text-align: center; border: 1px solid #2c3e50;">الكمية (Qty)</th>
+                                    <th style="padding: 12px; text-align: center; border: 1px solid #2c3e50;">سعر الوحدة (Unit Price)</th>
+                                    <th style="padding: 12px; text-align: center; border: 1px solid #2c3e50;">المجموع (Subtotal)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-set="line_num" t-value="0"/>
+                                <t t-foreach="doc.order_line" t-as="line">
+                                    <t t-set="line_num" t-value="line_num + 1"/>
+                                    <tr style="border-bottom: 1px solid #ddd;">
+                                        <td style="padding: 10px; border: 1px solid #ddd;" t-esc="line_num"/>
+                                        <td style="padding: 10px; border: 1px solid #ddd;">
+                                            <strong t-field="line.product_id.name"/>
+                                            <t t-if="line.name and line.name != line.product_id.name">
+                                                <br/><span style="font-size: 10pt; color: #7f8c8d;" t-field="line.name"/>
+                                            </t>
+                                        </td>
+                                        <td style="padding: 10px; text-align: center; border: 1px solid #ddd;" t-field="line.product_uom_qty"/>
+                                        <td style="padding: 10px; text-align: center; border: 1px solid #ddd;" t-field="line.price_unit" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                        <td style="padding: 10px; text-align: center; border: 1px solid #ddd;" t-field="line.price_subtotal" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+
+                        <!-- Totals -->
+                        <div style="margin-top: 20px; text-align: left;">
+                            <table style="width: 300px; margin-right: 0; margin-left: auto; border-collapse: collapse;">
+                                <tr>
+                                    <td style="padding: 8px; text-align: right;"><strong>المجموع الفرعي:</strong></td>
+                                    <td style="padding: 8px; text-align: left;" t-field="doc.amount_untaxed" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                </tr>
+                                <t t-if="doc.amount_tax">
+                                    <tr>
+                                        <td style="padding: 8px; text-align: right;"><strong>الضريبة:</strong></td>
+                                        <td style="padding: 8px; text-align: left;" t-field="doc.amount_tax" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                    </tr>
+                                </t>
+                                <tr style="background: #2c3e50; color: white; font-size: 14pt;">
+                                    <td style="padding: 12px; text-align: right;"><strong>الإجمالي:</strong></td>
+                                    <td style="padding: 12px; text-align: left;" t-field="doc.amount_total" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <!-- Required Documents -->
+                        <t t-if="doc.required_documents">
+                            <div style="margin-top: 30px; padding: 15px; background: #fff3cd; border: 1px solid #ffc107; border-radius: 5px;">
+                                <h4 style="color: #856404; margin-bottom: 10px;">المستندات المطلوبة (Required Documents)</h4>
+                                <t t-raw="doc.required_documents"/>
+                            </div>
+                        </t>
+
+                        <!-- Terms and Notes -->
+                        <t t-if="doc.note">
+                            <div style="margin-top: 30px;">
+                                <h4 style="color: #2c3e50;">ملاحظات (Notes)</h4>
+                                <p t-field="doc.note"/>
+                            </div>
+                        </t>
+
+                        <!-- Validity -->
+                        <div style="margin-top: 30px; padding: 15px; background: #d4edda; border: 1px solid #28a745; border-radius: 5px;">
+                            <p style="margin: 0;">
+                                <strong>صلاحية العرض:</strong> 
+                                <t t-if="doc.validity_date">
+                                    هذا العرض صالح حتى <span t-field="doc.validity_date" t-options='{"widget": "date"}'/>
+                                </t>
+                                <t t-else="">
+                                    30 يوماً من تاريخ الإصدار
+                                </t>
+                            </p>
+                        </div>
+
+                        <!-- Signature Section -->
+                        <div style="margin-top: 50px;">
+                            <table style="width: 100%;">
+                                <tr>
+                                    <td style="width: 50%; text-align: center; padding: 20px;">
+                                        <p><strong>المكتب الهندسي</strong></p>
+                                        <p t-field="doc.company_id.name"/>
+                                        <br/><br/>
+                                        <p>التوقيع: _____________________</p>
+                                        <p>التاريخ: _____________________</p>
+                                    </td>
+                                    <td style="width: 50%; text-align: center; padding: 20px;">
+                                        <p><strong>العميل</strong></p>
+                                        <p t-field="doc.partner_id.name"/>
+                                        <br/><br/>
+                                        <p>التوقيع: _____________________</p>
+                                        <p>التاريخ: _____________________</p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <!-- Footer Note -->
+                        <div style="margin-top: 30px; text-align: center; font-size: 10pt; color: #7f8c8d;">
+                            <p>شكراً لثقتكم بنا - Thank you for your trust</p>
+                        </div>
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

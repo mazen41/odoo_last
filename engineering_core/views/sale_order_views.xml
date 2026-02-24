@@ -1,0 +1,23 @@
+<odoo>
+    <record id="sale_order_view_form_engineering" model="ir.ui.view">
+        <field name="name">sale.order.form.engineering</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="after">
+                 <group string="بيانات المشروع (Project Details)">
+                    <group>
+                        <field name="building_type"/>
+                        <field name="service_type"/>
+                    </group>
+                    <group>
+                        <field name="area"/>
+                        <field name="block_no"/>
+                        <field name="street_no"/>
+                        <field name="plot_no"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

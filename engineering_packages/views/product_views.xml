@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Extend Product Form -->
+    <record id="view_product_template_form_inherit_packages" model="ir.ui.view">
+        <field name="name">product.template.form.inherit.packages</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_only_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='group_general']" position="after">
+                <group string="الباقة الهندسية (Engineering Package)" invisible="not is_engineering_package">
+                    <field name="is_engineering_package"/>
+                    <field name="engineering_package_id"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

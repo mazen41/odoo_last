@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_engineering_package,engineering.package.access,model_engineering_package,base.group_user,1,1,1,1
+access_engineering_package_line,engineering.package.line.access,model_engineering_package_line,base.group_user,1,1,1,1
+access_engineering_package_feature,engineering.package.feature.access,model_engineering_package_feature,base.group_user,1,1,1,1

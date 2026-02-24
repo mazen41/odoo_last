@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Contract Form View -->
+    <record id="view_engineering_contract_form" model="ir.ui.view">
+        <field name="name">engineering.contract.form</field>
+        <field name="model">engineering.contract</field>
+        <field name="arch" type="xml">
+            <form string="Engineering Contract">
+                <header>
+                    <button name="action_send_for_signature" string="إرسال للتوقيع (Send for Signature)" 
+                            type="object" class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_send_whatsapp" string="إرسال عبر واتساب (WhatsApp)" 
+                            type="object" class="btn-secondary"/>
+                    <button name="action_mark_signed" string="تم التوقيع (Mark as Signed)" 
+                            type="object" class="btn-success" invisible="state != 'sent'"/>
+                    <button name="action_activate" string="تفعيل (Activate)" 
+                            type="object" class="btn-primary" invisible="state != 'signed'"/>
+                    <button name="action_complete" string="إكمال (Complete)" 
+                            type="object" invisible="state != 'active'"/>
+                    <button name="action_cancel" string="إلغاء (Cancel)" 
+                            type="object" invisible="state in ('completed', 'cancelled')"/>
+                    <button name="action_reset_to_draft" string="إعادة لمسودة (Reset to Draft)" 
+                            type="object" invisible="state not in ('cancelled', 'sent')"/>
+                    <button name="action_print_contract" string="طباعة العقد (Print)" type="object"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,sent,signed,active,completed"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" readonly="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="معلومات العقد (Contract Info)">
+                            <field name="partner_id"/>
+                            <field name="project_id"/>
+                            <field name="sale_order_id" readonly="1"/>
+                            <field name="contract_date"/>
+                            <field name="contract_amount"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        <group string="تصنيف العقد (Contract Classification)">
+                            <field name="building_type"/>
+                            <field name="service_type"/>
+                            <field name="package_type"/>
+                            <field name="template_id"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="بيانات العقار (Property Details)">
+                            <field name="plot_no"/>
+                            <field name="block_no"/>
+                            <field name="street_no"/>
+                            <field name="area"/>
+                            <field name="civil_number"/>
+                        </group>
+                        <group string="التواريخ (Dates)">
+                            <field name="start_date"/>
+                            <field name="end_date"/>
+                            <field name="signature_date" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="محتوى العقد (Contract Content)">
+                            <field name="contract_body"/>
+                        </page>
+                        <page string="الشروط والأحكام (Terms &amp; Conditions)">
+                            <field name="terms_conditions"/>
+                        </page>
+                        <page string="العقد الموقع (Signed Document)" invisible="state not in ('signed', 'active', 'completed')">
+                            <group>
+                                <field name="signed_document" filename="signed_document_name"/>
+                                <field name="signed_document_name" invisible="1"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Contract Tree View -->
+    <record id="view_engineering_contract_tree" model="ir.ui.view">
+        <field name="name">engineering.contract.tree</field>
+        <field name="model">engineering.contract</field>
+        <field name="arch" type="xml">
+            <tree string="Engineering Contracts" decoration-info="state == 'draft'" 
+                  decoration-warning="state == 'sent'" decoration-success="state in ('signed', 'active')">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="project_id"/>
+                <field name="building_type"/>
+                <field name="service_type"/>
+                <field name="package_type"/>
+                <field name="contract_amount"/>
+                <field name="contract_date"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Contract Search View -->
+    <record id="view_engineering_contract_search" model="ir.ui.view">
+        <field name="name">engineering.contract.search</field>
+        <field name="model">engineering.contract</field>
+        <field name="arch" type="xml">
+            <search string="Search Contracts">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="project_id"/>
+                <filter string="مسودة (Draft)" name="draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="مرسل للتوقيع (Sent)" name="sent" domain="[('state', '=', 'sent')]"/>
+                <filter string="موقع (Signed)" name="signed" domain="[('state', '=', 'signed')]"/>
+                <filter string="نشط (Active)" name="active" domain="[('state', '=', 'active')]"/>
+                <separator/>
+                <filter string="سكن خاص" name="residential" domain="[('building_type', '=', 'residential')]"/>
+                <filter string="استثماري" name="investment" domain="[('building_type', '=', 'investment')]"/>
+                <filter string="تجاري" name="commercial" domain="[('building_type', '=', 'commercial')]"/>
+                <filter string="صناعي" name="industrial" domain="[('building_type', '=', 'industrial')]"/>
+                <group expand="0" string="Group By">
+                    <filter string="العميل (Customer)" name="group_partner" context="{'group_by': 'partner_id'}"/>
+                    <filter string="نوع المبنى (Building Type)" name="group_building" context="{'group_by': 'building_type'}"/>
+                    <filter string="نوع الخدمة (Service Type)" name="group_service" context="{'group_by': 'service_type'}"/>
+                    <filter string="الحالة (Status)" name="group_state" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Contract Action -->
+    <record id="action_engineering_contract" model="ir.actions.act_window">
+        <field name="name">العقود (Contracts)</field>
+        <field name="res_model">engineering.contract</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_engineering_contract_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                إنشاء عقد جديد
+            </p>
+            <p>
+                قم بإنشاء عقود هندسية مرتبطة بالمشاريع والعملاء
+            </p>
+        </field>
+    </record>
+</odoo>

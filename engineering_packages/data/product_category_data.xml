@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Engineering Services Category -->
+        <record id="categ_engineering_services" model="product.category">
+            <field name="name">الخدمات الهندسية (Engineering Services)</field>
+        </record>
+
+        <!-- Engineering Packages Category -->
+        <record id="categ_engineering_packages" model="product.category">
+            <field name="name">الباقات الهندسية (Engineering Packages)</field>
+            <field name="parent_id" ref="categ_engineering_services"/>
+        </record>
+
+        <!-- Sub-categories by Building Type -->
+        <record id="categ_packages_residential" model="product.category">
+            <field name="name">باقات السكن الخاص (Residential Packages)</field>
+            <field name="parent_id" ref="categ_engineering_packages"/>
+        </record>
+
+        <record id="categ_packages_investment" model="product.category">
+            <field name="name">باقات الاستثماري (Investment Packages)</field>
+            <field name="parent_id" ref="categ_engineering_packages"/>
+        </record>
+
+        <record id="categ_packages_commercial" model="product.category">
+            <field name="name">باقات التجاري (Commercial Packages)</field>
+            <field name="parent_id" ref="categ_engineering_packages"/>
+        </record>
+
+        <record id="categ_packages_industrial" model="product.category">
+            <field name="name">باقات الصناعي (Industrial Packages)</field>
+            <field name="parent_id" ref="categ_engineering_packages"/>
+        </record>
+
+        <!-- Individual Services Category -->
+        <record id="categ_individual_services" model="product.category">
+            <field name="name">الخدمات الفردية (Individual Services)</field>
+            <field name="parent_id" ref="categ_engineering_services"/>
+        </record>
+    </data>
+</odoo>
