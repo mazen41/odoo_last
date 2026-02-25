@@ -117,9 +117,14 @@ class SaleOrder(models.Model):
         Project creation is SEPARATE from confirmation.
         """
         for order in self:
-            # Only enforce this for Engineering Orders (where building_type is set)
-            # This allows standard Odoo demo data/tests to run without error
-            if order.building_type and order.quotation_stage_id and not order.quotation_stage_id.is_approved_stage:
+            # Skip this check entirely for standard Odoo orders (no building_type)
+            # This prevents blocking demo data installation from sale_planning etc.
+            if not order.building_type:
+                continue
+            # Only enforce approval check for ENGINEERING orders that:
+            # 1. Have a quotation_stage_id set
+            # 2. The stage is NOT an approved stage
+            if order.quotation_stage_id and not order.quotation_stage_id.is_approved_stage:
                 raise UserError(_("لا يمكن تأكيد عرض السعر حتى يتم الموافقة عليه.\nYou cannot confirm the quotation until it is in an 'Approved' stage."))
         
         return super(SaleOrder, self).action_confirm()
