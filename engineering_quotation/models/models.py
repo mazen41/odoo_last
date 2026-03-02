@@ -232,27 +232,33 @@ class SaleOrder(models.Model):
     # --- WhatsApp ---
     def action_send_quotation_whatsapp(self):
         self.ensure_one()
-        # Prefer mobile, fallback to phone
         customer_phone = self.partner_id.mobile or self.partner_id.phone
-        if not customer_phone: 
-            raise UserError(_("يجب إضافة رقم هاتف للعميل (Mobile/Phone missing)."))
-        
-        # 1. Clean the phone number (remove + space - etc)
+        if not customer_phone:
+            raise UserError(_("Please add a mobile number for the customer."))
+
+        # 1. Clean phone number
         cleaned_phone = ''.join(filter(str.isdigit, customer_phone))
+
+        # 2. Get the Base URL (e.g., https://mazen41-odoo-last.odoo.com)
+        base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
         
-        # 2. Generate the Portal Link
-        # This creates a special access token so the customer can see the quote without logging in
-        base_url = self.get_portal_url() 
+        # 3. Get the share link (usually /my/orders/...)
+        share_url = self._get_share_url(redirect=True, signup_partner=True, share_token=True)
         
-        # 3. Create the message
-        # "Hello [Name], please check quotation [Ref]. Link: [URL]"
-        msg_text = _("مرحباً %s،\nيرجى مراجعة عرض السعر %s عبر الرابط التالي:\n%s") % (self.partner_id.name or "Customer", self.name, base_url)
+        # 4. Combine them safely
+        # If share_url is already full (starts with http), use it. Otherwise, join them.
+        if share_url.startswith('http'):
+            full_link = share_url
+        else:
+            full_link = base_url + share_url
+
+        # 5. Create Message
+        msg_text = _("مرحباً %s،\nيرجى مراجعة عرض السعر %s عبر الرابط التالي:\n%s") % (self.partner_id.name, self.name, full_link)
         
-        # 4. Encode the text for URL (Handles spaces and Arabic characters correctly)
+        # 6. Encode for URL
         import urllib.parse
         encoded_msg = urllib.parse.quote(msg_text)
         
-        # 5. Open WhatsApp Web
         whatsapp_url = f"https://web.whatsapp.com/send?phone={cleaned_phone}&text={encoded_msg}"
         
         return {'type': 'ir.actions.act_url', 'url': whatsapp_url, 'target': 'new'}
