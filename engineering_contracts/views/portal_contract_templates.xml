@@ -1,0 +1,61 @@
+<odoo>
+    <template id="portal_contract_template" name="Contract Portal Template">
+        <t t-call="portal.portal_layout">
+            <div id="wrap">
+                <div class="container mt-4 mb-5">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white text-center">
+                            <h2>عقد رقم (Contract No): <t t-esc="contract.name"/></h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-4">
+                                <div class="col-6">
+                                    <strong>العميل (Customer):</strong> <span t-field="contract.partner_id.name"/><br/>
+                                    <strong>نوع العقار:</strong> <span t-field="contract.building_type"/><br/>
+                                    <strong>الخدمة:</strong> <span t-field="contract.service_type"/>
+                                </div>
+                                <div class="col-6">
+                                    <strong>المبلغ (Amount):</strong> <span t-field="contract.contract_amount"/><br/>
+                                    <strong>القسيمة:</strong> <span t-field="contract.plot_no"/><br/>
+                                    <strong>القطعة:</strong> <span t-field="contract.block_no"/>
+                                </div>
+                            </div>
+
+                            <hr/>
+                            
+                            <!-- Contract Content -->
+                            <div class="mt-4 mb-4">
+                                <h4>محتوى العقد (Contract Body)</h4>
+                                <div class="p-3 bg-light border" t-raw="contract.contract_body"/>
+                            </div>
+
+                            <div class="mt-4 mb-4">
+                                <h4>الشروط والأحكام (Terms)</h4>
+                                <div class="p-3 bg-light border" t-raw="contract.terms_conditions"/>
+                            </div>
+
+                            <!-- Signing Section -->
+                            <t t-if="contract.state == 'sent'">
+                                <div class="alert alert-info text-center mt-4">
+                                    <h4>يرجى التوقيع على العقد (Please Sign the Contract)</h4>
+                                    <t t-call="portal.signature_form">
+                                        <t t-set="call_url" t-value="contract.get_portal_url(suffix='/accept')"/>
+                                        <t t-set="default_name" t-value="contract.partner_id.name"/>
+                                    </t>
+                                </div>
+                            </t>
+                            
+                            <t t-if="contract.state in ['signed', 'active', 'completed']">
+                                <div class="alert alert-success text-center mt-4">
+                                    <h4>تم توقيع هذا العقد بنجاح. (This contract has been signed.)</h4>
+                                    <p>تاريخ التوقيع: <span t-field="contract.signature_date"/></p>
+                                </div>
+                            </t>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>
