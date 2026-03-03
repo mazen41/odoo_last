@@ -46,20 +46,31 @@
                             <field name="template_id"/>
                         </group>
                     </group>
-                    <group>
-                        <group string="بيانات العقار (Property Details)">
+                    
+                    <!-- NEW SECTION FOR DYNAMIC FIELDS - MERGED -->
+                    <group string="بيانات لملء العقد (Dynamic Fill Data)">
+                        <group>
+                            <field name="agreement_day"/>
+                            <field name="customer_nationality"/>
+                            <field name="civil_number"/>
+                        </group>
+                        <group>
                             <field name="plot_no"/>
                             <field name="block_no"/>
                             <field name="street_no"/>
                             <field name="area"/>
-                            <field name="civil_number"/>
+                            <field name="amount_in_words" placeholder="مثال: ألف وخمسمائة"/>
                         </group>
+                    </group>
+
+                    <group>
                         <group string="التواريخ (Dates)">
                             <field name="start_date"/>
                             <field name="end_date"/>
                             <field name="signature_date" readonly="1"/>
                         </group>
                     </group>
+                    
                     <notebook>
                         <page string="محتوى العقد (Contract Content)">
                             <field name="contract_body"/>
