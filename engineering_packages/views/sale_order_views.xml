@@ -4,15 +4,11 @@
         <field name="model">sale.order</field>
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
-            
             <!-- Add the Package selection field right after the customer -->
             <xpath expr="//field[@name='partner_id']" position="after">
-                
-                <!-- THE NAME MUST BE 'engineering_package_id' TO MATCH THE PYTHON FILE -->
                 <field name="engineering_package_id" 
                        options="{'no_create': True, 'no_open': True}"
                        placeholder="اختر باقة هندسية..."/>
-
             </xpath>
         </field>
     </record>
