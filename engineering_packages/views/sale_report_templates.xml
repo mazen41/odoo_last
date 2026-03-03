@@ -1,38 +1,101 @@
 <odoo>
-    <!-- Inherit the standard Sales Order PDF template -->
-    <template id="report_saleorder_document_inherit_engineering" inherit_id="sale.report_saleorder_document">
-        
-        <!-- Find the "informations" div (where Date and Expiration are) and put our data AFTER it -->
-        <xpath expr="//div[@id='informations']" position="after">
-            
-            <!-- 1. Project Details Section -->
-            <div class="row mt-4 mb-4" id="pdf_project_details" style="page-break-inside: avoid; background-color: #f8f9fa; padding: 15px; border-radius: 5px;">
-                <div class="col-12">
-                    <h4 style="border-bottom: 2px solid #000; padding-bottom: 5px; color: #0055A5;">تفاصيل المشروع (Project Details)</h4>
-                </div>
-                
-                <div class="col-6 mt-2">
-                    <div t-if="doc.building_type"><strong>نوع العقار: </strong> <span t-field="doc.building_type"/></div>
-                    <div t-if="doc.service_type"><strong>نوع الخدمة: </strong> <span t-field="doc.service_type"/></div>
-                    <div t-if="doc.area"><strong>المساحة: </strong> <span t-field="doc.area"/></div>
-                </div>
-                
-                <div class="col-6 mt-2">
-                    <div t-if="doc.plot_no"><strong>رقم القسيمة: </strong> <span t-field="doc.plot_no"/></div>
-                    <div t-if="doc.block_no"><strong>القطعة: </strong> <span t-field="doc.block_no"/></div>
-                    <div t-if="doc.street_no"><strong>الشارع: </strong> <span t-field="doc.street_no"/></div>
-                </div>
-            </div>
+    <!-- 1. INHERIT the existing report action to use our new template -->
+    <record id="sale.action_report_saleorder" model="ir.actions.report">
+        <field name="name">Quotation / Order (Engineering)</field>
+        <field name="report_name">engineering_packages.report_saleorder_custom_document</field>
+        <field name="report_file">engineering_packages.report_saleorder_custom_document</field>
+    </record>
 
-            <!-- 2. Package Features Section -->
-            <div class="row mt-4 mb-4" t-if="doc.package_features_html" style="page-break-inside: avoid;">
-                <div class="col-12">
-                    <h4 style="border-bottom: 2px solid #000; padding-bottom: 5px; color: #0055A5;">مميزات الباقة (Package Features)</h4>
-                    <!-- t-out renders the HTML properly in the PDF -->
-                    <div style="font-size: 14px;" t-out="doc.package_features_html"/>
+    <!-- 2. DEFINE the custom PDF template design -->
+    <template id="report_saleorder_custom_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <div class="article o_report_layout_custom_engineering">
+                    <div class="page">
+                        
+                        <!-- HEADER -->
+                        <div class="custom-header-eng row">
+                            <div class="col-8">
+                                <h2 style="color: #36454F;">DYNAMIC DESIGN</h2>
+                                <h3 style="color: #555;">DYNAMIC ENGINEERING CONSULTANTS</h3>
+                            </div>
+                            <div class="col-4 text-left">
+                                <img src="/engineering_packages/static/src/img/logo.png" style="max-height: 80px;"/>
+                            </div>
+                        </div>
+
+                        <!-- TITLE BAR -->
+                        <div class="title-bar-eng">
+                            استشاريون لتصميم وإشراف، معماري - إنشائي، مباني وإنشاءات، تصميم وإدارة مشاريع
+                        </div>
+
+                        <!-- DATE -->
+                        <div class="row mb-5">
+                            <div class="col-12 text-left">
+                                <strong>التاريخ:</strong> <span t-field="doc.date_order" t-options='{"widget": "date"}'/>
+                            </div>
+                        </div>
+
+                        <!-- MAIN TITLE -->
+                        <div class="main-title-eng">
+                            عرض سعر خدمات إستشارية
+                        </div>
+
+                        <!-- CUSTOMER INFO -->
+                        <div class="customer-info-eng mb-4">
+                            <p><strong>الموضوع:</strong> عرض سعر تصميم وترخيص وإشراف مبنى <span t-field="doc.building_type"/>
+                            </p>
+                            <p><strong>السادة:</strong> <span t-field="doc.partner_id.name"/></p>
+                            <p>تحية طيبة وبعد،</p>
+                        </div>
+
+                        <!-- SERVICES LIST (From Package Features) -->
+                        <div class="services-list-eng mb-4" t-if="doc.package_features_html">
+                            <p>يسرنا بأن نقدم لكم عرض السعر الخاص بالخدمات التالية:</p>
+                            <!-- This t-out will render the UL/LI list correctly -->
+                            <div t-out="doc.package_features_html" style="font-size: 14px;"/>
+                        </div>
+                        
+                        <!-- PRICE -->
+                        <div class="price-eng mb-4">
+                            <strong>قيمة الأتعاب:</strong>
+                            <span t-field="doc.amount_total" t-options='{"widget": "monetary", "display_currency": doc.currency_id}'/>
+                        </div>
+
+                        <!-- NOTES -->
+                        <div class="notes-eng mb-4">
+                            <strong>ملاحظات:</strong>
+                            <ul>
+                                <li>عرض السعر شامل رسوم جهات الدولة.</li>
+                            </ul>
+                        </div>
+
+                        <!-- PAYMENT TERMS -->
+                        <div class="payment-terms-eng mb-5">
+                            <strong>شروط الدفع:</strong>
+                            <p t-field="doc.payment_term_id.name"/>
+                        </div>
+
+                        <!-- CLOSING -->
+                        <div class="closing-eng">
+                            <p>مع خالص التحية والتقدير،</p>
+                            <p><strong>ديناميك ديزاين للاستشارات الهندسية</strong></p>
+                        </div>
+                        
+                        <!-- FOOTER -->
+                        <div class="custom-footer-eng row" style="position: absolute; bottom: 0; width: 100%;">
+                           <div class="col-2 text-center">
+                                <img src="/engineering_packages/static/src/img/logo.png" style="max-height: 50px;"/>
+                           </div>
+                           <div class="col-10 text-center">
+                               <span>الكويت - قبلة - قطعة 11 - شارع الصالحية - بناية 18 مكتب (1) الدور الأول</span><br/>
+                               <span>T: 22911228 - 55955599 | E-mail: info@dynamicd.com</span>
+                           </div>
+                        </div>
+                        
+                    </div>
                 </div>
-            </div>
-            
-        </xpath>
+            </t>
+        </t>
     </template>
 </odoo>
