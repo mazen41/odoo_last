@@ -11,10 +11,10 @@ class SaleOrder(models.Model):
         domain="[('building_type', 'in', [building_type, 'all']), ('active', '=', True)]"
     )
     
-    package_features_html = fields.Html(
+     package_features_html = fields.Html(
         string="مميزات الباقة (Package Features)", 
         compute="_compute_package_features_html",
-        store=True
+        sanitize=False # Tells Odoo not to clean/strip the HTML tags
     )
 
     @api.depends('engineering_package_id', 'engineering_package_id.feature_ids', 'engineering_package_id.feature_ids.name', 'engineering_package_id.feature_ids.included')
