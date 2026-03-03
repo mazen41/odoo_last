@@ -126,7 +126,7 @@ def _get_area_selection(self):
         ('الرحية وام توينج', 'الرحية وام توينج'), ('الروضتين', 'الروضتين'),
         ('السالمى', 'السالمى'), ('السكراب', 'السكراب'),
         ('الشقايا – الدبدبة – المتياهه', 'الشقايا – الدبدبة – المتياهه'),
-        ('الصابرية – العرفجية', 'الالصابرية – العرفجية'),
+        ('الالصابرية – العرفجية', 'الالصابرية – العرفجية'),
         ('الصبية', 'الصبية'), ('الصليبية الزراعية', 'الصليبية الزراعية'),
         ('الصليبيه السكنية', 'الصليبيه السكنية'),
         ('الصليبية الصناعية 2', 'الصليبية الصناعية 2'),
@@ -369,7 +369,7 @@ class SaleOrder(models.Model):
             'block_no': self.block_no,
             'street_no': self.street_no,
             'area': self.area,
-            'region': self.region,
+            'region': self.region, # Ensure region is also passed
         }
         project = self.env['project.project'].create(project_vals)
         
@@ -433,8 +433,8 @@ class ProjectProject(models.Model):
     building_type = fields.Selection([('residential', 'سكن خاص'), ('investment', 'استثماري'), ('commercial', 'تجاري'), ('industrial', 'صناعي'), ('cooperative', 'جمعيات وتعاونيات'), ('mosque', 'مساجد'), ('hangar', 'مخازن / شبرات'), ('farm', 'مزارع')], string="نوع العقار")
     service_type = fields.Selection([('new_construction', 'بناء جديد'), ('demolition', 'هدم'), ('modification', 'تعديل'), ('addition', 'اضافة'), ('addition_modification', 'تعديل واضافة'), ('supervision_only', 'إشراف هندسي فقط'), ('renovation', 'ترميم'), ('internal_partitions', 'قواطع داخلية'), ('shades_garden', 'مظلات / حدائق')], string="نوع الخدمة")
     
-    # --- ADDED REGION HERE ---
-    region = fields.Selection(_get_area_selection, string="المنطقة (Region)")
+    # --- The critical fix for 'region' is here: use the helper function directly ---
+    region = fields.Selection(selection=_get_area_selection, string="المنطقة (Region)")
     
     plot_no = fields.Char(string="رقم القسيمة")
     block_no = fields.Char(string="القطعة")
