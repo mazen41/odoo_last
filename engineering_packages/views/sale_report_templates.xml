@@ -1,0 +1,38 @@
+<odoo>
+    <!-- Inherit the standard Sales Order PDF template -->
+    <template id="report_saleorder_document_inherit_engineering" inherit_id="sale.report_saleorder_document">
+        
+        <!-- Find the "informations" div (where Date and Expiration are) and put our data AFTER it -->
+        <xpath expr="//div[@id='informations']" position="after">
+            
+            <!-- 1. Project Details Section -->
+            <div class="row mt-4 mb-4" id="pdf_project_details" style="page-break-inside: avoid; background-color: #f8f9fa; padding: 15px; border-radius: 5px;">
+                <div class="col-12">
+                    <h4 style="border-bottom: 2px solid #000; padding-bottom: 5px; color: #0055A5;">تفاصيل المشروع (Project Details)</h4>
+                </div>
+                
+                <div class="col-6 mt-2">
+                    <div t-if="doc.building_type"><strong>نوع العقار: </strong> <span t-field="doc.building_type"/></div>
+                    <div t-if="doc.service_type"><strong>نوع الخدمة: </strong> <span t-field="doc.service_type"/></div>
+                    <div t-if="doc.area"><strong>المساحة: </strong> <span t-field="doc.area"/></div>
+                </div>
+                
+                <div class="col-6 mt-2">
+                    <div t-if="doc.plot_no"><strong>رقم القسيمة: </strong> <span t-field="doc.plot_no"/></div>
+                    <div t-if="doc.block_no"><strong>القطعة: </strong> <span t-field="doc.block_no"/></div>
+                    <div t-if="doc.street_no"><strong>الشارع: </strong> <span t-field="doc.street_no"/></div>
+                </div>
+            </div>
+
+            <!-- 2. Package Features Section -->
+            <div class="row mt-4 mb-4" t-if="doc.package_features_html" style="page-break-inside: avoid;">
+                <div class="col-12">
+                    <h4 style="border-bottom: 2px solid #000; padding-bottom: 5px; color: #0055A5;">مميزات الباقة (Package Features)</h4>
+                    <!-- t-out renders the HTML properly in the PDF -->
+                    <div style="font-size: 14px;" t-out="doc.package_features_html"/>
+                </div>
+            </div>
+            
+        </xpath>
+    </template>
+</odoo>
