@@ -1,14 +1,15 @@
 <odoo>
     <template id="sale_order_portal_content_inherit_package_features" inherit_id="sale.sale_order_portal_content">
-        <!-- Add the "Package Features" section right before the product lines table -->
         <xpath expr="//table[@id='sales_order_table']" position="before">
+            <!-- Added a check to ensure we only show the box if there is actual content -->
             <t t-if="sale_order.package_features_html">
-                <div class="card mt-4 mb-4">
-                    <div class="card-header">
+                <div class="card mt-4 mb-4 shadow-sm">
+                    <div class="card-header bg-primary text-white">
                         <h4 class="mb-0">مميزات الباقة (Package Features)</h4>
                     </div>
                     <div class="card-body">
-                        <div t-raw="sale_order.package_features_html"/>
+                        <!-- Use t-out instead of t-raw for Odoo 17 -->
+                        <div t-out="sale_order.package_features_html"/>
                     </div>
                 </div>
             </t>
