@@ -126,7 +126,7 @@ def _get_area_selection(self):
         ('الرحية وام توينج', 'الرحية وام توينج'), ('الروضتين', 'الروضتين'),
         ('السالمى', 'السالمى'), ('السكراب', 'السكراب'),
         ('الشقايا – الدبدبة – المتياهه', 'الشقايا – الدبدبة – المتياهه'),
-        ('الصابرية – العرفجية', 'الصابرية – العرفجية'),
+        ('الصابرية – العرفجية', 'الالصابرية – العرفجية'),
         ('الصبية', 'الصبية'), ('الصليبية الزراعية', 'الصليبية الزراعية'),
         ('الصليبيه السكنية', 'الصليبيه السكنية'),
         ('الصليبية الصناعية 2', 'الصليبية الصناعية 2'),
@@ -242,7 +242,7 @@ class SaleOrder(models.Model):
             
             if order.service_type == 'new_construction':
                 docs += "<li>وثيقة الملكية (Title Deed)</li><li>كتاب التخصيص (Allocation Letter)</li><li>مخطط المساحة (Survey Plan)</li>"
-            elif order.service_type in ['modification', 'extension', 'extension_modification']:
+            elif order.service_type in ['modification', 'addition', 'addition_modification']: # Corrected 'extension' to 'addition'
                 docs += "<li>رخصة البناء الأصلية (Original Building Permit)</li><li>المخططات المعمارية والإنشائية المرخصة (Original Plans)</li><li>وثيقة البيت (House Document)</li>"
             elif order.service_type == 'demolition':
                 docs += "<li>كتاب براءة ذمة من الكهرباء والماء (Clearance Certificate)</li><li>رخصة البناء القديمة (Old Permit)</li>"
@@ -287,12 +287,10 @@ class SaleOrder(models.Model):
 
     def action_confirm(self):
         for order in self:
-            if not order.building_type:
-                continue
-
-            approved_stage = self.env['engineering.quotation.stage'].search([('is_approved_stage', '=', True)], limit=1)
-
+            # Only apply automatic stage change if the order is being confirmed and has a signature
+            # This prevents manual confirmation from skipping the approval stage if there's no signature
             if order.signature:
+                approved_stage = self.env['engineering.quotation.stage'].search([('is_approved_stage', '=', True)], limit=1)
                 if approved_stage and order.quotation_stage_id != approved_stage:
                     self.env['engineering.quotation.stage.history'].create({
                         'quotation_id': order.id,
@@ -300,8 +298,7 @@ class SaleOrder(models.Model):
                         'to_stage_id': approved_stage.id,
                     })
                     order.quotation_stage_id = approved_stage.id
-
-            elif order.quotation_stage_id and not order.quotation_stage_id.is_approved_stage:
+            elif not order.quotation_stage_id.is_approved_stage:
                 raise UserError(_("لا يمكن تأكيد عرض السعر يدوياً حتى يتم الموافقة عليه (Approved) أو توقيعه من قبل العميل.\nYou cannot confirm the quotation until it is in an 'Approved' stage or signed by the customer."))
         
         return super(SaleOrder, self).action_confirm()
