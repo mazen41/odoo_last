@@ -2,7 +2,7 @@
 from odoo import models, fields, api
 
 # Helper function to get the list of areas
-def _get_area_selection():
+def _get_area_selection(self):
     return [
         ('محافظة العاصمة', [
             ('جابر الاحمد', 'جابر الاحمد'),
