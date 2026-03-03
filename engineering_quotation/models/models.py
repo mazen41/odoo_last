@@ -34,7 +34,7 @@ def _get_area_selection(self):
         ('الدوحة السكنيه', 'الدوحة السكنيه'), ('الرى', 'الرى'),
         ('ميناء الدوحة', 'ميناء الدوحة'), ('جزيره عوهه', 'جزيره عوهه'),
         ('جزيره فيلكه', 'جزيره فيلكه'), ('جزيره مسكان', 'جزيره مسكان'),
-        ('حدائق السور – الحزام الاخضر', 'حدائق السور – الحزام الاخضر'),
+        ('حدائق السور – الحزام الاخضر', 'حدائق السسور – الحزام الاخضر'),
         ('بنيد القار', 'بنيد القار'), ('ميناء الشويخ', 'ميناء الشويخ'),
         ('معسكرات المباركيه – جيوان', 'معسكرات المباركيه – جيوان'),
         ('شاليهات الدوحة', 'شاليهات الدوحة'), ('السره', 'السره'),
@@ -242,7 +242,7 @@ class SaleOrder(models.Model):
             
             if order.service_type == 'new_construction':
                 docs += "<li>وثيقة الملكية (Title Deed)</li><li>كتاب التخصيص (Allocation Letter)</li><li>مخطط المساحة (Survey Plan)</li>"
-            elif order.service_type in ['modification', 'addition', 'addition_modification']: # Corrected 'extension' to 'addition'
+            elif order.service_type in ['modification', 'addition', 'addition_modification']:
                 docs += "<li>رخصة البناء الأصلية (Original Building Permit)</li><li>المخططات المعمارية والإنشائية المرخصة (Original Plans)</li><li>وثيقة البيت (House Document)</li>"
             elif order.service_type == 'demolition':
                 docs += "<li>كتاب براءة ذمة من الكهرباء والماء (Clearance Certificate)</li><li>رخصة البناء القديمة (Old Permit)</li>"
@@ -386,7 +386,6 @@ class SaleOrder(models.Model):
         return project
 
     # --- Button Visibility Helper ---
-    # FIXED: Kept state and next_stage_id in dependencies to ensure button updates correctly
     @api.depends('quotation_stage_id', 'quotation_stage_id.next_stage_id', 'state')
     def _compute_next_stage_button_name(self):
         for order in self:
@@ -430,20 +429,20 @@ class ProjectProject(models.Model):
 
     sale_order_id = fields.Many2one('sale.order', string='Source Quotation', readonly=True)
     
-    # Engineering specific fields
-    building_type = fields.Selection(related='sale_order_id.building_type', store=True, string="نوع المبنى")
-    service_type = fields.Selection(related='sale_order_id.service_type', store=True, string="نوع الخدمة")
+    # REPLACED 'related' with standard fields to ensure data is saved
+    building_type = fields.Selection([('residential', 'سكن خاص'), ('investment', 'استثماري'), ('commercial', 'تجاري'), ('industrial', 'صناعي'), ('cooperative', 'جمعيات وتعاونيات'), ('mosque', 'مساجد'), ('hangar', 'مخازن / شبرات'), ('farm', 'مزارع')], string="نوع العقار")
+    service_type = fields.Selection([('new_construction', 'بناء جديد'), ('demolition', 'هدم'), ('modification', 'تعديل'), ('addition', 'اضافة'), ('addition_modification', 'تعديل واضافة'), ('supervision_only', 'إشراف هندسي فقط'), ('renovation', 'ترميم'), ('internal_partitions', 'قواطع داخلية'), ('shades_garden', 'مظلات / حدائق')], string="نوع الخدمة")
     
     # --- ADDED REGION HERE ---
-    region = fields.Selection(related='sale_order_id.region', store=True, string="المنطقة (Region)")
+    region = fields.Selection(_get_area_selection, string="المنطقة (Region)")
     
-    plot_no = fields.Char(related='sale_order_id.plot_no', store=True, string="رقم القسيمة")
-    block_no = fields.Char(related='sale_order_id.block_no', store=True, string="القطعة")
+    plot_no = fields.Char(string="رقم القسيمة")
+    block_no = fields.Char(string="القطعة")
 
     # --- ADDED STREET NO HERE ---
-    street_no = fields.Char(related='sale_order_id.street_no', store=True, string="الشارع")
+    street_no = fields.Char(string="الشارع")
 
-    area = fields.Char(related='sale_order_id.area', store=True, string="المساحة (Area)")
+    area = fields.Char(string="مساحة الارض")
 
 
 class ProjectTask(models.Model):
