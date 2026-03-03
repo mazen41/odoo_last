@@ -207,17 +207,26 @@ class SaleOrder(models.Model):
             'target': 'current',
         }
 
-    def _create_engineering_project(self):
+   def _create_engineering_project(self):
         self.ensure_one()
         if self.project_id:
             return self.project_id
 
-        # Create Project
-        project = self.env['project.project'].create({
+        # --- THE FIX IS HERE ---
+        # We are adding building_type, service_type, plot_no, etc. to the creation dictionary
+        project_vals = {
             'name': f"{self.name} - {self.partner_id.name}",
             'partner_id': self.partner_id.id,
             'sale_order_id': self.id,
-        })
+            'building_type': self.building_type,
+            'service_type': self.service_type,
+            'plot_no': self.plot_no,
+            'block_no': self.block_no,
+            'street_no': self.street_no,
+            'area': self.area,
+            'region': self.region,
+        }
+        project = self.env['project.project'].create(project_vals)
         
         # Define Project Stages (Tasks Columns)
         stages = ['التصميم المبدئي (الكروكي)', 'التعاقد وجمع الوثائق', 'الموافقات الخارجية', 'التصميمات التفصيلية', 'الإشراف الهندسي', 'إنهاء المشروع']
