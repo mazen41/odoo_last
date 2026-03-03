@@ -22,8 +22,7 @@
                                 <tr>
                                     <td style="padding: 10px; border: 1px solid #ddd; width: 30%;"><strong>الطرف الأول (المكتب الهندسي)</strong></td>
                                     <td style="padding: 10px; border: 1px solid #ddd;">
-                                        <span t-esc="doc.company_id.name or 'المكتب الهندسي'"/>
-                                    </td>
+<span t-esc="res_company.name or 'المكتب الهندسي'"/>                                    </td>
                                 </tr>
                                 <tr>
                                     <td style="padding: 10px; border: 1px solid #ddd;"><strong>الطرف الثاني (العميل)</strong></td>
