@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
+import urllib.parse
 
 # TASK 9 – إدارة تقارير الإشراف (Site Visit Report Model)
 class EngineeringSiteVisit(models.Model):
@@ -19,9 +20,11 @@ class EngineeringSiteVisit(models.Model):
     visit_date = fields.Datetime(string='Visit Date', default=fields.Datetime.now, required=True)
     visitor_id = fields.Many2one('res.users', string='Engineer/User', default=lambda self: self.env.user, required=True)
     
-    # Upload Site Visit Report (PDF)
-    pdf_report = fields.Binary(string="PDF Report File", attachment=True)
-    pdf_filename = fields.Char(string="Filename")
+    # --- CHANGED: Now explicitly supports Any File (Image, PDF, etc) ---
+    # Note: We kept the variable name 'pdf_report' so it doesn't break your XML views, 
+    # but we changed the string label.
+    pdf_report = fields.Binary(string="ملف التقرير (صورة أو PDF) - Report File", attachment=True)
+    pdf_filename = fields.Char(string="اسم الملف (Filename)")
 
     # زر إرسال التقرير للمالك (Send Report Button)
     sent_to_customer = fields.Boolean(string='Sent to Customer', readonly=True)
@@ -30,24 +33,32 @@ class EngineeringSiteVisit(models.Model):
     # TASK 9.2 – Send Report Button Logic
     def action_generate_whatsapp_redirect_report(self):
         self.ensure_one()
-        customer_phone = self.customer_id.phone
+        # Prefer mobile, fallback to phone
+        customer_phone = self.customer_id.mobile or self.customer_id.phone
         
         if not customer_phone:
-            raise UserError(_("Customer phone number is missing on the project/customer card."))
+            raise UserError(_("رقم الهاتف مفقود (Customer phone missing)."))
+        
+        # --- CHANGED: Updated error message to include images ---
         if not self.pdf_report:
-            raise UserError(_("Please upload the PDF report file before sending."))
+            raise UserError(_("يرجى رفع ملف التقرير (صورة أو PDF) أولاً قبل الإرسال.\nPlease upload the report file before sending."))
 
         # تنظيف رقم الهاتف وإزالة أي مسافات أو رموز غير ضرورية
         cleaned_phone = ''.join(filter(str.isdigit, customer_phone))
         
-        # رسالة تلقائية للعميل
-        message = _("Please review the attached Site Visit Report: %s" % self.name)
+        # 1. Get the Base URL of your website
+        base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
         
-        # بناء رابط WhatsApp
-        whatsapp_url = "https://web.whatsapp.com/send?phone=%s&text=%s" % (
-            cleaned_phone, 
-            message.replace(' ', '%20') # ترميز المسافات
-        )
+        # 2. Build a direct download link for the uploaded file (Image or PDF)
+        safe_filename = urllib.parse.quote(self.pdf_filename or 'Report_File')
+        download_link = f"{base_url}/web/content/engineering.site.visit/{self.id}/pdf_report/{safe_filename}"
+        
+        # 3. رسالة للعميل تحتوي على الرابط
+        message = _("مرحباً،\nنرفق لكم تقرير الزيارة الميدانية: %s\nيمكنكم عرض أو تحميل المرفق عبر الرابط التالي:\n%s") % (self.name, download_link)
+        
+        # 4. بناء رابط WhatsApp
+        encoded_msg = urllib.parse.quote(message)
+        whatsapp_url = f"https://web.whatsapp.com/send?phone={cleaned_phone}&text={encoded_msg}"
         
         # تسجيل عملية الإرسال
         self.write({
@@ -59,7 +70,7 @@ class EngineeringSiteVisit(models.Model):
         return {
             'type': 'ir.actions.act_url',
             'url': whatsapp_url,
-            'target': 'new', # لفتح الرابط في نافذة جديدة
+            'target': 'new',
         }
 
 
