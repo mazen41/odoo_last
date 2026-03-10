@@ -13,8 +13,13 @@
         'reports/initial_design_report.xml', # <--- ADD THIS
         'views/project_project_views.xml',
         'data/project_task_type_data.xml',
-
+    
     ],
+       'assets': {
+        'web.assets_backend': [
+            'engineering_project/static/src/css/task_state.css',
+        ],
+    },
     'license': 'LGPL-3',
     'installable': True,
     'application': True,
