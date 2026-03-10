@@ -1,54 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- The action now targets the TASK model -->
+    <!-- The action targets the TASK model -->
     <record id="action_report_initial_design_form" model="ir.actions.report">
         <field name="name">نموذج تفاصيل المشروع</field>
-        <field name="model">project.task</field> <!-- CHANGED -->
+        <field name="model">project.task</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">engineering_project.report_initial_design_template</field>
         <field name="report_file">engineering_project.report_initial_design_template</field>
         <field name="print_report_name">'Project Form - %s' % (object.name)</field>
-        <field name="binding_model_id" ref="project.model_project_task"/> <!-- CHANGED -->
+        <field name="binding_model_id" ref="project.model_project_task"/>
         <field name="binding_type">report</field>
     </record>
 
-    <!-- The template now reads data from the TASK and its parent PROJECT -->
+    <!-- The template reads data from the TASK and its parent PROJECT -->
     <template id="report_initial_design_template">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="doc">
                 <t t-call="web.external_layout">
-                    <div class="page" style="direction: rtl; text-align: right; font-family: 'DejaVu Sans', sans-serif; border: 1px solid black; padding: 20px;">
+                    <div class="page" style="direction: rtl; text-align: right; font-family: 'DejaVu Sans', sans-serif;">
                         
-                        <div class="text-center mb-4">
-                            <h2 style="text-decoration: underline;">نموذج مشاريع مكتب دينامك ديزاين</h2>
-                            <h3>مهمة: <span t-field="doc.name"/></h3>
+                        <div style="border: 1px solid black; padding: 20px;">
+                            <div class="text-center mb-4">
+                                <h2 style="text-decoration: underline;">نموذج مشاريع مكتب دينامك ديزاين</h2>
+                                <h3>مهمة: <span t-field="doc.name"/></h3>
+                            </div>
+
+                            <!-- Top Info Table -->
+                            <table class="table table-bordered" style="width: 100%; border: 2px solid black;">
+                                <tr>
+                                    <td style="width: 50%;"><strong>اسم المالك: </strong> <span t-field="doc.project_id.partner_id.name"/></td>
+                                    <td style="width: 50%;"><strong>رقم التلفون: </strong> <span t-field="doc.project_id.partner_id.phone"/></td>
+                                </tr>
+                            </table>
+
+                            <h4 class="mt-3">بيانات القسيمة:</h4>
+                            <table class="table table-bordered" style="width: 100%; border: 2px solid black;">
+                                <tr>
+                                    <td><strong>المحافظة: </strong> <span t-field="doc.project_id.governorate_id.name"/></td>
+                                    <td><strong>المنطقة: </strong> <span t-field="doc.project_id.region_id.name"/></td>
+                                    <td><strong>القطعة: </strong> <span t-field="doc.project_id.block_no"/></td>
+                                    <td><strong>القسيمة: </strong> <span t-field="doc.project_id.plot_no"/></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4"><strong>المساحة: </strong> <span t-field="doc.project_id.area"/></td>
+                                </tr>
+                            </table>
+
+                            <h4 class="mt-4">تفاصيل مكونات المشروع المنجزة:</h4>
+                            
+                            <!-- Call python helper function to group ONLY checked items -->
+                            <t t-set="grouped_phases" t-value="doc.get_completed_phases_grouped()"/>
+                            
+                            <!-- If nothing is checked -->
+                            <t t-if="not grouped_phases">
+                                <p style="color: gray; font-style: italic; border: 1px solid #ddd; padding: 10px;">لم يتم إنجاز أو تحديد أي مراحل حتى الآن.</p>
+                            </t>
+
+                            <!-- Loop through the groups (Floor Name -> List of Phases) -->
+                            <t t-foreach="grouped_phases.items()" t-as="group">
+                                <div style="border: 2px solid black; padding: 10px; margin-bottom: 10px; page-break-inside: avoid;">
+                                    
+                                    <!-- Print the Floor Category Name -->
+                                    <strong style="font-size: 18px; color: #333;"><span t-esc="group[0]"/>:</strong><br/>
+                                    
+                                    <ul style="list-style-type: none; padding-right: 20px; margin-top: 5px; margin-bottom: 0;">
+                                        <!-- Loop through the completed phases inside this floor -->
+                                        <t t-foreach="group[1]" t-as="phase">
+                                            <li style="margin-bottom: 6px; font-size: 16px;">
+                                                <!-- Custom Checkmark Icon -->
+                                                <span style="font-family: Arial; color: green; font-weight: bold;">&#10004;</span> 
+                                                <span t-field="phase.name"/>
+                                            </li>
+                                        </t>
+                                    </ul>
+
+                                </div>
+                            </t>
+
                         </div>
-
-                        <!-- Top Info Table (Data comes from the parent project) -->
-                        <table class="table table-bordered" style="width: 100%; border: 2px solid black;">
-                            <tr>
-                                <td style="width: 50%;"><strong>اسم المالك: </strong> <span t-field="doc.project_id.partner_id.name"/></td>
-                                <td style="width: 50%;"><strong>رقم التلفون: </strong> <span t-field="doc.project_id.partner_id.phone"/></td>
-                            </tr>
-                        </table>
-
-                        <h4 class="mt-3">بيانات القسيمة:</h4>
-                        <table class="table table-bordered" style="width: 100%; border: 2px solid black;">
-                            <tr>
-                                <td><strong>المنطقة: </strong> <span t-field="doc.project_id.region"/></td>
-                                <td><strong>القطعة: </strong> <span t-field="doc.project_id.block_no"/></td>
-                                <td><strong>القسيمة: </strong> <span t-field="doc.project_id.plot_no"/></td>
-                                <td><strong>المساحة: </strong> <span t-field="doc.project_id.area"/></td>
-                            </tr>
-                        </table>
-
-                        <h4 class="mt-4">تفاصيل مكونات المشروع:</h4>
-                        
-                        <!-- The Boxes (Data comes from the task itself) -->
-                        <div style="border: 2px solid black; min-height: 100px; padding: 10px; margin-bottom: 10px;"><strong>أولاً السرداب:</strong><br/><span t-field="doc.floor_basement"/></div>
-                        <div style="border: 2px solid black; min-height: 120px; padding: 10px; margin-bottom: 10px;"><strong>ثانياً الدور الأرضي:</strong><br/><span t-field="doc.floor_ground"/></div>
-                        <div style="border: 2px solid black; min-height: 120px; padding: 10px; margin-bottom: 10px;"><strong>الدور الأول:</strong><br/><span t-field="doc.floor_first"/></div>
-                        <div style="border: 2px solid black; min-height: 120px; padding: 10px; margin-bottom: 10px;"><strong>الدور الثاني:</strong><br/><span t-field="doc.floor_second"/></div>
-                        <div style="border: 2px solid black; min-height: 100px; padding: 10px; margin-bottom: 10px;"><strong>الدور السطح:</strong><br/><span t-field="doc.floor_roof"/></div>
                     </div>
                 </t>
             </t>
