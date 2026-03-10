@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
-import urllib.parse
 
-# Helper function to get the list of areas organized by governorate
+# This is the MASTER helper function. It lives only in this module.
 def _get_governorate_areas():
     return {
         'محافظة العاصمة': [
@@ -117,7 +116,7 @@ def _get_governorate_areas():
             ('امغره الصناعية', 'امغره الصناعية'), ('تيماء', 'تيماء'),
             ('جال الزور', 'جال الزور'), ('جزيرة ام المرادم', 'جزيرة ام المرادم'),
             ('جزيره ام النمل', 'جزيره ام النمل'), ('جزيرة بوبيان', 'جزيرة بوبيان'),
-            ('جزيرة قارووه', 'جزيرة قارووه'), ('جزيرة كبر', 'جزيرة ككبر'),
+            ('جزيرة قارووه', 'جزيرة قارووه'), ('جزيرة كبر', 'جزيرة كبر'),
             ('جزيرة وربة', 'جزيرة وربة'), ('جنوب امغرة', 'جنوب امغرة'),
             ('شرق الجهراء', 'شرق الجهراء'), ('شرق تيماء', 'شرق تيماء'),
             ('شمال غرب الجهراء', 'شمال غرب الجهراء'),
@@ -138,7 +137,7 @@ def _get_governorate_areas():
     }
 
 def _get_dynamic_regions_selection(self):
-    current_governorate = self.governorate
+    current_governorate = self._context.get('default_governorate') or self.governorate
     if current_governorate:
         return _get_governorate_areas().get(current_governorate, [])
     return []
@@ -163,7 +162,6 @@ class ResPartner(models.Model):
     )
     region = fields.Selection(_get_dynamic_regions_selection, string="المنطقة (Region)", tracking=True)
 
-    # Odoo 17: New computed fields for dynamic UI
     region_is_visible = fields.Boolean(compute='_compute_region_properties')
     region_is_required = fields.Boolean(compute='_compute_region_properties')
 
@@ -173,12 +171,11 @@ class ResPartner(models.Model):
             record.region_is_visible = bool(record.governorate)
             record.region_is_required = bool(record.governorate)
 
-
     @api.onchange('governorate')
     def _onchange_governorate(self):
         self.region = False
         if self.governorate:
-            return {'domain': {'region': _get_governorate_areas().get(self.governorate, [])}}
+            return {'domain': {'region': [(area[0], area[1]) for area in _get_governorate_areas().get(self.governorate, [])]}}
         return {'domain': {'region': []}}
         
     @api.constrains('governorate', 'region')
@@ -188,7 +185,6 @@ class ResPartner(models.Model):
                 valid_regions = [area[0] for area in _get_governorate_areas().get(record.governorate, [])]
                 if record.region not in valid_regions:
                     raise ValidationError(_("المنطقة المختارة '%s' لا تتبع للمحافظة '%s'.") % (record.region, record.governorate))
-
 
 # ==============================================================================
 #  CRM LEAD
@@ -209,7 +205,6 @@ class CrmLead(models.Model):
     )
     region = fields.Selection(_get_dynamic_regions_selection, string="المنطقة (Region)")
 
-    # Odoo 17: New computed fields for dynamic UI
     region_is_visible = fields.Boolean(compute='_compute_region_properties')
     region_is_required = fields.Boolean(compute='_compute_region_properties')
 
@@ -223,7 +218,7 @@ class CrmLead(models.Model):
     def _onchange_governorate(self):
         self.region = False
         if self.governorate:
-            return {'domain': {'region': _get_governorate_areas().get(self.governorate, [])}}
+            return {'domain': {'region': [(area[0], area[1]) for area in _get_governorate_areas().get(self.governorate, [])]}}
         return {'domain': {'region': []}}
     
     @api.constrains('governorate', 'region')
@@ -246,9 +241,8 @@ class CrmLead(models.Model):
         values['region'] = self.region
         return values
 
-
 # ==============================================================================
-#  SALE ORDER (Keep this section for context, assuming it's in the same file)
+#  SALE ORDER
 # ==============================================================================
 class SaleOrder(models.Model):
     _inherit = 'sale.order'
@@ -267,7 +261,6 @@ class SaleOrder(models.Model):
     )
     region = fields.Selection(_get_dynamic_regions_selection, string="المنطقة (Region)", store=True)
 
-    # Odoo 17: New computed fields for dynamic UI
     region_is_visible = fields.Boolean(compute='_compute_region_properties')
     region_is_required = fields.Boolean(compute='_compute_region_properties')
 
@@ -281,7 +274,7 @@ class SaleOrder(models.Model):
     def _onchange_governorate(self):
         self.region = False
         if self.governorate:
-            return {'domain': {'region': _get_governorate_areas().get(self.governorate, [])}}
+            return {'domain': {'region': [(area[0], area[1]) for area in _get_governorate_areas().get(self.governorate, [])]}}
         return {'domain': {'region': []}}
         
     @api.constrains('governorate', 'region')
@@ -292,14 +285,9 @@ class SaleOrder(models.Model):
                 if record.region not in valid_regions:
                     raise ValidationError(_("المنطقة المختارة '%s' لا تتبع للمحافظة '%s'.") % (record.region, record.governorate))
 
-# ... (Include other classes like ProjectProject and ProjectTask if they are in this file,
-#      applying the same region_is_visible/required pattern if needed there too.)
-
-# The ProjectProject and ProjectTask classes (and any other classes) from your original code
-# would go here, continuing to use _get_dynamic_regions_selection for their 'region' fields
-# and implementing the onchange and constrains methods as well.
-
-# Example for ProjectProject (if you have it in this file as well):
+# ==============================================================================
+#  PROJECT PROJECT
+# ==============================================================================
 class ProjectProject(models.Model):
     _inherit = 'project.project'
 
@@ -311,18 +299,25 @@ class ProjectProject(models.Model):
         selection=[(gov, gov) for gov in _get_governorate_areas().keys()],
         string="المحافظة"
     )
-
-    # Use the dynamic selection helper here too
     region = fields.Selection(
         selection=_get_dynamic_regions_selection,
         string="المنطقة"
     )
+
+    region_is_visible = fields.Boolean(compute='_compute_region_properties')
+    region_is_required = fields.Boolean(compute='_compute_region_properties')
+
+    @api.depends('governorate')
+    def _compute_region_properties(self):
+        for record in self:
+            record.region_is_visible = bool(record.governorate)
+            record.region_is_required = bool(record.governorate)
     
     @api.onchange('governorate')
     def _onchange_governorate(self):
         self.region = False
         if self.governorate:
-            return {'domain': {'region': _get_governorate_areas().get(self.governorate, [])}}
+            return {'domain': {'region': [(area[0], area[1]) for area in _get_governorate_areas().get(self.governorate, [])]}}
         return {'domain': {'region': []}}
         
     @api.constrains('governorate', 'region')
@@ -338,7 +333,9 @@ class ProjectProject(models.Model):
     street_no = fields.Char(string="الشارع")
     area = fields.Char(string="مساحة الارض")
 
-
+# ==============================================================================
+#  PROJECT TASK
+# ==============================================================================
 class ProjectTask(models.Model):
     _inherit = 'project.task'
 
