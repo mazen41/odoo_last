@@ -9,16 +9,36 @@
         <field name="arch" type="xml">
             
             <xpath expr="//header" position="inside">
+                <!-- CORRECTED BUTTON -->
                 <button name="action_start_workflow" 
                         string="بدء سير العمل (Start Workflow)" 
                         type="object" 
                         class="btn-primary" 
-                        invisible="workflow_started == True"/>
+                        attrs="{'invisible': ['|', ('workflow_started', '=', True), ('id', '=', False)]}"
+                        help="Creates the initial tasks for this project's workflow."/>
             </xpath>
 
             <xpath expr="//field[@name='partner_id']" position="after">
                 <field name="sale_order_id" readonly="1"/>
+                
+                <!-- ALL WORKFLOW FIELDS ADDED AS INVISIBLE -->
                 <field name="workflow_started" invisible="1"/>
+                <field name="residential_step_1_triggered" invisible="1"/>
+                <field name="residential_step_2_triggered" invisible="1"/>
+                <field name="residential_step_3_triggered" invisible="1"/>
+                <field name="residential_step_4_triggered" invisible="1"/>
+                <field name="residential_step_5_triggered" invisible="1"/>
+                <field name="residential_step_6_triggered" invisible="1"/>
+                <field name="residential_step_7_triggered" invisible="1"/>
+                <field name="residential_step_8_triggered" invisible="1"/>
+                <field name="step_2_triggered" invisible="1"/>
+                <field name="step_3_triggered" invisible="1"/>
+                <field name="step_4_triggered" invisible="1"/>
+                <field name="step_5_triggered" invisible="1"/>
+                <field name="step_6_triggered" invisible="1"/>
+                <field name="step_8_triggered" invisible="1"/>
+                <field name="step_9_triggered" invisible="1"/>
+                <field name="step_10_triggered" invisible="1"/>
                 
                 <group string="فريق العمل (Project Team)">
                     <group>
@@ -39,7 +59,6 @@
                     <group>
                         <field name="building_type"/>
                         <field name="service_type"/>
-                        <!-- FIXED: Using the new Many2one fields -->
                         <field name="governorate_id" options="{'no_create': True, 'no_open': True}"/>
                         <field name="region_id" 
                                domain="[('governorate_id', '=', governorate_id)]" 
@@ -65,7 +84,6 @@
         <field name="inherit_id" ref="project.view_task_form2"/>
         <field name="arch" type="xml">
             
-            <!-- Add Buttons to the Task Header (Removed the manual next stage button) -->
             <xpath expr="//header" position="inside">
                 <button name="%(engineering_project.action_report_initial_design_form)d" 
                         string="طباعة نموذج المشروع (Print PDF)" type="action" class="btn-primary"/>
@@ -75,11 +93,9 @@
                         string="الذهاب للمشروع (Go to Project)" type="object" icon="fa-briefcase"/>
             </xpath>
 
-            <!-- Create a new Tab for the Form Details inside the Task -->
             <xpath expr="//notebook" position="inside">
                 <page string="نموذج مكونات المشروع" name="project_details_form">
                     <group>
-                        <!-- Hidden field needed for the automation trigger -->
                         <field name="workflow_step" invisible="1"/>
                         
                         <field name="floor_basement" placeholder="اكتب تفاصيل السرداب هنا..."/>
