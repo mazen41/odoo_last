@@ -13,6 +13,7 @@
         'reports/initial_design_report.xml', # <--- ADD THIS
         'views/project_project_views.xml',
         'data/project_task_type_data.xml',
+        'views/pledge_template_views.xml', # <--- ADD THIS
 
     ],
     'license': 'LGPL-3',
