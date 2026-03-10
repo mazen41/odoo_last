@@ -14,8 +14,17 @@
 
                 <!-- Location Details Section - Focus on forcing vertical stacking here -->
                 <group string="تفاصيل الموقع (Location Details)">
-                    <!-- Forcing each field to take a full line -->
-                    <field name="region"/>  <!-- ADDED THIS LINE FOR THE NEW FIELD -->
+                    <!-- New Governorate field -->
+                    <field name="governorate" 
+                           options="{'no_open': True, 'no_create': True}" 
+                           placeholder="اختر المحافظة" />
+                    
+                    <!-- Region field, now dependent on governorate -->
+                    <field name="region" 
+                           options="{'no_open': True, 'no_create': True}" 
+                           attrs="{'invisible': [('governorate', '=', False)], 'required': [('governorate', '!=', False)]}"
+                           placeholder="اختر المنطقة" />
+                    
                     <field name="area"/>
                     <field name="block_no"/>
                     <field name="street_no"/>
