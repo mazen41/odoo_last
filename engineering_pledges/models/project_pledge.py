@@ -3,13 +3,15 @@ from odoo import models, fields, api
 import datetime
 
 class EngineeringTaskPledge(models.Model):
-    _name = 'engineering.task.pledge'
+    _name = 'engineering.task.pledge' 
     _description = 'Task Municipality Pledge'
 
     task_id = fields.Many2one('project.task', string='Task', ondelete='cascade')
     template_id = fields.Many2one('engineering.pledge.template', string='نوع التعهد (Pledge Type)', required=True)
     is_completed = fields.Boolean(string='متوفر / تم التوقيع (Completed)', default=False)
-    generated_html = fields.Html(string='Generated Content')
+    
+    # --- THE FIX IS HERE: ADDED sanitize=False ---
+    generated_html = fields.Html(string='Generated Content', sanitize=False) 
 
 class ProjectTask(models.Model):
     _inherit = 'project.task'
