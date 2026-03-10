@@ -15,6 +15,8 @@
     'depends': ['base', 'crm', 'sale_management'],
     'data': [
         'views/res_partner_views.xml',
+                'data/kuwait_data.xml', # Add this line
+
         'views/crm_lead_views.xml',
         'views/sale_order_views.xml',
     ],
