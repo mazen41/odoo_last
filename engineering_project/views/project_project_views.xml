@@ -39,7 +39,8 @@
                     <group>
                         <field name="building_type"/>
                         <field name="service_type"/>
-                      <field name="governorate_id" options="{'no_create': True, 'no_open': True}"/>
+                        <!-- FIXED: Using the new Many2one fields -->
+                        <field name="governorate_id" options="{'no_create': True, 'no_open': True}"/>
                         <field name="region_id" 
                                domain="[('governorate_id', '=', governorate_id)]" 
                                options="{'no_create': True, 'no_open': True}"/>
