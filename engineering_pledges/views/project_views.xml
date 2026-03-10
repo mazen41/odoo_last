@@ -5,8 +5,13 @@
         <field name="inherit_id" ref="project.view_task_form2"/>
         <field name="arch" type="xml">
             
+            <!-- THE FIX: We must add the field to the view (even if hidden) -->
+            <xpath expr="//field[@name='project_id']" position="after">
+                <field name="stage_sequence" invisible="1"/>
+            </xpath>
+            
             <xpath expr="//notebook" position="inside">
-                <!-- THE FIX: We check for the Stage's sequence number instead of its name -->
+                <!-- Now this invisible rule will work perfectly -->
                 <page string="تعهدات البلدية (Pledges)" 
                       name="municipality_pledges" 
                       invisible="stage_sequence != 2">
