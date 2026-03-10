@@ -161,11 +161,9 @@ class ProjectProject(models.Model):
     service_type = fields.Selection([('new_construction', 'بناء جديد'), ('demolition', 'هدم'), ('modification', 'تعديل'), ('addition', 'اضافة'), ('addition_modification', 'تعديل واضافة'), ('supervision_only', 'إشراف هندسي فقط'), ('renovation', 'ترميم'), ('internal_partitions', 'قواطع داخلية'), ('shades_garden', 'مظلات / حدائق')], string="نوع الخدمة")
     
     # --- FIXED REGION & GOVERNORATE FIELDS ---
-    governorate = fields.Selection(
-        selection=[(gov, gov) for gov in _get_governorate_areas().keys()],
-        string="المحافظة (Governorate)"
-    )
-    region = fields.Selection(_get_all_regions, string="المنطقة (Region)")
+      # --- FIXED: Use the same Many2one fields as in Engineering Core ---
+    governorate_id = fields.Many2one('kuwait.governorate', string="المحافظة")
+    region_id = fields.Many2one('kuwait.region', string="المنطقة (Region)")
     
     @api.onchange('governorate')
     def _onchange_governorate(self):
