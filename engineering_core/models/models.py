@@ -188,63 +188,26 @@ class ResPartner(models.Model):
     building_type = fields.Selection([('residential', 'سكن خاص'), ('investment', 'استثماري'), ('commercial', 'تجاري'), ('industrial', 'صناعي'), ('cooperative', 'جمعيات وتعاونيات'), ('mosque', 'مساجد'), ('hangar', 'مخازن / شبرات'), ('farm', 'مزارع')], string="نوع العقار", tracking=True)
     service_type = fields.Selection([('new_construction', 'بناء جديد'), ('demolition', 'هدم'), ('modification', 'تعديل'), ('addition', 'اضافة'), ('addition_modification', 'تعديل واضافة'), ('supervision_only', 'إشراف هندسي فقط'), ('renovation', 'ترميم'), ('internal_partitions', 'قواطع داخلية'), ('shades_garden', 'مظلات / حدائق')], string="نوع الخدمة", tracking=True)
     civil_number = fields.Char(string="الرقم المدني (Civil ID)")
-    plot_no = fields.Char(string="رقم القسيمة (Plot)")
+     plot_no = fields.Char(string="رقم القسيمة (Plot)")
     block_no = fields.Char(string="القطعة (Block)")
     street_no = fields.Char(string="الشارع (Street)")
     area = fields.Char(string="مساحة الارض (Area)")
     
-    # New Governorate field
+    # New Governorate field - DEFINITION IS OK
     governorate = fields.Selection(
-        selection=_get_governorate_names, # Use the helper to get only governorate names
+        selection=_get_governorate_names,
         string="المحافظة (Governorate)",
         tracking=True
     )
     
-    # Region field now dynamically filtered based on governorate
+    # Region field - DEFINITION IS OK, but logic must be commented out
     region = fields.Selection(
-        selection='_get_filtered_area_selection',
+        [], # Temporarily set to empty list
         string="المنطقة (Region)",
         store=True,
         readonly=False,
         tracking=True
     )
-
-    @api.depends('governorate')
-    def _get_filtered_area_selection(self):
-        # This method provides the filtered selection options for the 'region' field.
-        # It's a method that computes the selection values.
-        # It's not setting 'rec.region', but providing the list of choices.
-
-        if not self.governorate:
-            # If no governorate is selected, clear the region and return an empty list of options
-            self.region = False
-            return []
-
-        full_area_list = _get_area_selection(self)
-        filtered_areas = []
-        capture_areas = False
-
-        for key, label in full_area_list:
-            if key == self.governorate and '-----' in label:
-                # Found the start of the selected governorate's areas
-                capture_areas = True
-                continue # Skip the separator itself
-
-            if capture_areas:
-                if '-----' in label:
-                    # Found the start of the next governorate, stop capturing
-                    capture_areas = False
-                    break
-                else:
-                    # Add area to the filtered list
-                    filtered_areas.append((key, label))
-        
-        # If the currently selected region is not in the filtered list, clear it
-        if self.region and self.region not in [area[0] for area in filtered_areas]:
-            self.region = False
-
-        return filtered_areas
-
 
 # ==============================================================================
 #  CRM LEAD (Handles copying data to new quotations)
