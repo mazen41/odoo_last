@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
+import urllib.parse # Keep this if it's used elsewhere, otherwise it can be removed if only these models are being edited.
 
 # Helper function to get the list of areas organized by governorate
 def _get_governorate_areas():
@@ -136,8 +137,19 @@ def _get_governorate_areas():
         ],
     }
 
-def _get_all_regions(self):
-    """Helper function to load ALL regions at once for the Selection field"""
+# NEW HELPER: This will be used by models to dynamically get regions based on their governorate field
+def _get_dynamic_regions_selection(self):
+    current_governorate = self.governorate
+    if current_governorate:
+        return _get_governorate_areas().get(current_governorate, [])
+    return [] # Return empty list if no governorate is selected
+
+# We keep _get_all_regions for project.project if it needs to list all regions when governorate is not set
+# Or if we want a fallback list that shows ALL regions initially, then filters.
+# For consistency and strict filtering, using _get_dynamic_regions_selection is generally better.
+# Let's rename it for clarity if it's meant for "all possible regions" (e.g., in search views or initial setup)
+def _get_all_possible_regions(self):
+    """Helper function to load ALL possible regions, regardless of a selected governorate."""
     all_regions = []
     seen_regions = set()
     for areas in _get_governorate_areas().values():
@@ -162,17 +174,21 @@ class ResPartner(models.Model):
     street_no = fields.Char(string="الشارع (Street)")
     area = fields.Char(string="مساحة الارض (Area)")
     
-    # --- New Fields for Governorate and Region ---
     governorate = fields.Selection(
         selection=[(gov, gov) for gov in _get_governorate_areas().keys()],
         string="المحافظة (Governorate)", tracking=True
     )
-    region = fields.Selection(_get_all_regions, string="المنطقة (Region)", tracking=True)
+    # Changed selection to the dynamic helper
+    region = fields.Selection(_get_dynamic_regions_selection, string="المنطقة (Region)", tracking=True)
 
     @api.onchange('governorate')
     def _onchange_governorate(self):
-        """Clears Region when Governorate changes to force a new selection"""
-        self.region = False
+        """Clears Region when Governorate changes and returns domain for filtering"""
+        self.region = False # Clear region on governorate change
+        # Return a domain to filter the region selection based on the chosen governorate
+        if self.governorate:
+            return {'domain': {'region': _get_governorate_areas().get(self.governorate, [])}}
+        return {'domain': {'region': []}} # Empty domain if no governorate selected
         
     @api.constrains('governorate', 'region')
     def _check_valid_region(self):
@@ -197,18 +213,22 @@ class CrmLead(models.Model):
     street_no = fields.Char(string="الشارع (Street)")
     area = fields.Char(string="مساحة الارض (Area)")
     
-    # --- New Fields for Governorate and Region ---
     governorate = fields.Selection(
         selection=[(gov, gov) for gov in _get_governorate_areas().keys()],
         string="المحافظة (Governorate)"
     )
-    region = fields.Selection(_get_all_regions, string="المنطقة (Region)")
+    # Changed selection to the dynamic helper
+    region = fields.Selection(_get_dynamic_regions_selection, string="المنطقة (Region)")
 
     @api.onchange('governorate')
     def _onchange_governorate(self):
-        """Clears Region when Governorate changes to force a new selection"""
-        self.region = False
-        
+        """Clears Region when Governorate changes and returns domain for filtering"""
+        self.region = False # Clear region on governorate change
+        # Return a domain to filter the region selection based on the chosen governorate
+        if self.governorate:
+            return {'domain': {'region': _get_governorate_areas().get(self.governorate, [])}}
+        return {'domain': {'region': []}} # Empty domain if no governorate selected
+    
     @api.constrains('governorate', 'region')
     def _check_valid_region(self):
         """Validates that the selected region belongs to the governorate"""
@@ -247,17 +267,21 @@ class SaleOrder(models.Model):
     street_no = fields.Char(string="الشارع", store=True)
     area = fields.Char(string="مساحة الارض", store=True)
     
-    # --- New Fields for Governorate and Region ---
     governorate = fields.Selection(
         selection=[(gov, gov) for gov in _get_governorate_areas().keys()],
         string="المحافظة (Governorate)", store=True
     )
-    region = fields.Selection(_get_all_regions, string="المنطقة (Region)", store=True)
+    # Changed selection to the dynamic helper
+    region = fields.Selection(_get_dynamic_regions_selection, string="المنطقة (Region)", store=True)
 
     @api.onchange('governorate')
     def _onchange_governorate(self):
-        """Clears Region when Governorate changes to force a new selection"""
-        self.region = False
+        """Clears Region when Governorate changes and returns domain for filtering"""
+        self.region = False # Clear region on governorate change
+        # Return a domain to filter the region selection based on the chosen governorate
+        if self.governorate:
+            return {'domain': {'region': _get_governorate_areas().get(self.governorate, [])}}
+        return {'domain': {'region': []}} # Empty domain if no governorate selected
         
     @api.constrains('governorate', 'region')
     def _check_valid_region(self):
@@ -267,3 +291,60 @@ class SaleOrder(models.Model):
                 valid_regions = [area[0] for area in _get_governorate_areas().get(record.governorate, [])]
                 if record.region not in valid_regions:
                     raise ValidationError(_("المنطقة المختارة '%s' لا تتبع للمحافظة '%s'.") % (record.region, record.governorate))
+
+# The ProjectProject and ProjectTask classes (and any other classes) from your original code
+# would go here, continuing to use _get_dynamic_regions_selection for their 'region' fields
+# and implementing the onchange and constrains methods as well.
+
+# Example for ProjectProject (if you have it in this file as well):
+class ProjectProject(models.Model):
+    _inherit = 'project.project'
+
+    sale_order_id = fields.Many2one('sale.order', string='Quotation Source', readonly=True)
+    building_type = fields.Selection([('residential', 'سكن خاص'), ('investment', 'استثماري'), ('commercial', 'تجاري'), ('industrial', 'صناعي'), ('cooperative', 'جمعيات وتعاونيات'), ('mosque', 'مساجد'), ('hangar', 'مخازن / شبرات'), ('farm', 'مزارع')], string="نوع العقار")
+    service_type = fields.Selection([('new_construction', 'بناء جديد'), ('demolition', 'هدم'), ('modification', 'تعديل'), ('addition', 'اضافة'), ('addition_modification', 'تعديل واضافة'), ('supervision_only', 'إشراف هندسي فقط'), ('renovation', 'ترميم'), ('internal_partitions', 'قواطع داخلية'), ('shades_garden', 'مظلات / حدائق')], string="نوع الخدمة")
+    
+    governorate = fields.Selection(
+        selection=[(gov, gov) for gov in _get_governorate_areas().keys()],
+        string="المحافظة"
+    )
+
+    # Use the dynamic selection helper here too
+    region = fields.Selection(
+        selection=_get_dynamic_regions_selection,
+        string="المنطقة"
+    )
+    
+    @api.onchange('governorate')
+    def _onchange_governorate(self):
+        self.region = False
+        if self.governorate:
+            return {'domain': {'region': _get_governorate_areas().get(self.governorate, [])}}
+        return {'domain': {'region': []}}
+        
+    @api.constrains('governorate', 'region')
+    def _check_valid_region(self):
+        for project in self:
+            if project.governorate and project.region:
+                valid_regions = [area[0] for area in _get_governorate_areas().get(project.governorate, [])]
+                if project.region not in valid_regions:
+                    raise ValidationError(_("المنطقة المختارة '%s' لا تتبع للمحافظة '%s'.") % (project.region, project.governorate))
+
+    plot_no = fields.Char(string="رقم القسيمة")
+    block_no = fields.Char(string="القطعة")
+    street_no = fields.Char(string="الشارع")
+    area = fields.Char(string="مساحة الارض")
+
+
+class ProjectTask(models.Model):
+    _inherit = 'project.task'
+
+    def action_view_parent_project(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'project.project',
+            'res_id': self.project_id.id,
+            'view_mode': 'form',
+            'target': 'current',
+        }
