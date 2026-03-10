@@ -4,7 +4,7 @@ from odoo.exceptions import UserError, ValidationError
 import urllib.parse
 
 # ==============================================================================
-#  HELPER FUNCTIONS FOR GOVERNORATE & REGION
+#  HELPER FUNCTIONS FOR GOVERNORATE & REGION (Moved out of the model for cleanliness)
 # ==============================================================================
 def _get_governorate_areas():
     return {
@@ -160,23 +160,31 @@ class ProjectProject(models.Model):
     building_type = fields.Selection([('residential', 'سكن خاص'), ('investment', 'استثماري'), ('commercial', 'تجاري'), ('industrial', 'صناعي'), ('cooperative', 'جمعيات وتعاونيات'), ('mosque', 'مساجد'), ('hangar', 'مخازن / شبرات'), ('farm', 'مزارع')], string="نوع المبنى")
     service_type = fields.Selection([('new_construction', 'بناء جديد'), ('demolition', 'هدم'), ('modification', 'تعديل'), ('addition', 'اضافة'), ('addition_modification', 'تعديل واضافة'), ('supervision_only', 'إشراف هندسي فقط'), ('renovation', 'ترميم'), ('internal_partitions', 'قواطع داخلية'), ('shades_garden', 'مظلات / حدائق')], string="نوع الخدمة")
     
-        # NEW FIELDS
+    # --- FIXED: Using Many2one fields ---
     governorate_id = fields.Many2one('kuwait.governorate', string="المحافظة")
     region_id = fields.Many2one('kuwait.region', string="المنطقة")
     
-    @api.onchange('governorate')
+    @api.onchange('governorate_id') # Changed from 'governorate' to 'governorate_id'
     def _onchange_governorate(self):
         """Clears Region when Governorate changes"""
-        self.region = False
+        self.region_id = False # Changed from 'region' to 'region_id'
         
-    @api.constrains('governorate', 'region')
+    @api.constrains('governorate_id', 'region_id') # Changed from 'governorate', 'region'
     def _check_valid_region(self):
         """Validates that the selected region belongs to the governorate"""
         for project in self:
-            if project.governorate and project.region:
-                valid_regions = [area[0] for area in _get_governorate_areas().get(project.governorate, [])]
-                if project.region not in valid_regions:
-                    raise ValidationError(_("المنطقة المختارة '%s' لا تتبع للمحافظة '%s'.") % (project.region, project.governorate))
+            # NOTE: The constraint logic needs to use the actual field names (governorate_id/region_id)
+            # and the helper function _get_governorate_areas uses the old selection names (string keys).
+            # We must assume the constraint is testing the relation, which is harder to map directly.
+            # For simplicity in this code block, we'll map the *name* attribute of the M2O record back to the keys.
+            
+            gov_name = project.governorate_id.name if project.governorate_id else False
+            region_name = project.region_id.name if project.region_id else False
+            
+            if gov_name and region_name:
+                valid_regions = [area[0] for area in _get_governorate_areas().get(gov_name, [])]
+                if region_name not in valid_regions:
+                    raise ValidationError(_("المنطقة المختارة '%s' لا تتبع للمحافظة '%s'.") % (region_name, gov_name))
 
     plot_no = fields.Char(string="رقم القسيمة")
     block_no = fields.Char(string="القطعة")
