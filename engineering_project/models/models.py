@@ -178,25 +178,3 @@ class ProjectTask(models.Model):
         encoded_message = urllib.parse.quote(message)
         whatsapp_url = f"https://web.whatsapp.com/send?phone={cleaned_phone}&text={encoded_message}"
         return { 'type': 'ir.actions.act_url', 'url': whatsapp_url, 'target': 'new' }
-# ==========================================================
-#  PHASE 1: MUNICIPALITY PLEDGE TEMPLATES (نماذج التعهدات)
-# ==========================================================
-class EngineeringPledgeTemplate(models.Model):
-    _name = 'engineering.pledge.template'
-    _description = 'Municipality Pledge Template'
-    _order = 'sequence, id'
-
-    name = fields.Char(string='اسم التعهد (Pledge Name)', required=True)
-    sequence = fields.Integer(default=10)
-    active = fields.Boolean(default=True)
-
-    # Which building type does this pledge belong to?
-    building_type = fields.Selection([
-        ('residential', 'سكن خاص'), ('investment', 'استثماري'), 
-        ('commercial', 'تجاري'), ('industrial', 'صناعي'), 
-        ('cooperative', 'جمعيات وتعاونيات'), ('mosque', 'مساجد'), 
-        ('hangar', 'مخازن / شبرات'), ('farm', 'مزارع'), ('all', 'جميع الأنواع')
-    ], string="نوع العقار المرتبط", required=True, default='all')
-
-    # The actual text of the pledge
-    body_html = fields.Html(string='نص التعهد (Pledge Body)', sanitize=False)
