@@ -569,7 +569,7 @@ class ProjectTask(models.Model):
         ('residential_task_8', 'Residential Task 8'),
     ], string="Workflow Trigger", readonly=True)
 
-     phase_ids = fields.One2many('project.task.phase', 'task_id', string='مراحل التنفيذ (Phases)')
+    phase_ids = fields.One2many('project.task.phase', 'task_id', string='مراحل التنفيذ (Phases)')
 
     def action_load_default_phases(self):
         """ Loads the default checklist based on building type """
