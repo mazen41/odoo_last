@@ -620,3 +620,14 @@ class KuwaitRegion(models.Model):
     _description = 'Kuwait Region'
     name = fields.Char(string='المنطقة', required=True)
     governorate_id = fields.Many2one('kuwait.governorate', string="المحافظة", required=True)
+    
+class ProjectTaskPhase(models.Model):
+    _name = 'project.task.phase'
+    _description = 'Task Construction Phase Checklist'
+    _order = 'sequence, id'
+
+    task_id = fields.Many2one('project.task', string='Task', ondelete='cascade')
+    sequence = fields.Integer(string='التسلسل', default=10)
+    floor_category = fields.Char(string='الدور (Floor)', required=True)
+    name = fields.Char(string='المرحلة (Phase)', required=True)
+    is_completed = fields.Boolean(string='تم (Completed)', default=False)
