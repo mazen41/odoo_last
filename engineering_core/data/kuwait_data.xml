@@ -1,22 +1,22 @@
 <odoo>
     <data noupdate="1">
         <!-- Governorates -->
-        <record id="gov_asima" model="kuwait.governorate">
+        <record id="gov_asima" model="kuwait.region">
             <field name="name">محافظة العاصمة</field>
         </record>
-        <record id="gov_hawalli" model="kuwait.governorate">
+        <record id="gov_hawalli" model="kuwait.region">
             <field name="name">محافظة حولي</field>
         </record>
-        <record id="gov_farwaniya" model="kuwait.governorate">
+        <record id="gov_farwaniya" model="kuwait.region">
             <field name="name">محافظة الفروانية</field>
         </record>
-        <record id="gov_ahmadi" model="kuwait.governorate">
+        <record id="gov_ahmadi" model="kuwait.region">
             <field name="name">محافظة الأحمدي</field>
         </record>
-        <record id="gov_jahra" model="kuwait.governorate">
+        <record id="gov_jahra" model="kuwait.region">
             <field name="name">محافظة الجهراء</field>
         </record>
-        <record id="gov_mubarak_alkabeer" model="kuwait.governorate">
+        <record id="gov_mubarak_alkabeer" model="kuwait.region">
             <field name="name">محافظة مبارك الكبير</field>
         </record>
 
@@ -35,7 +35,7 @@
         <record id="reg_asima_alrawda" model="kuwait.region"> <field name="name">الروضة</field> <field name="governorate_id" ref="gov_asima"/> </record>
         <record id="reg_asima_aladeeliya" model="kuwait.region"> <field name="name">العديلية</field> <field name="governorate_id" ref="gov_asima"/> </record>
         <record id="reg_asima_alfaiha" model="kuwait.region"> <field name="name">الفيحاء</field> <field name="governorate_id" ref="gov_asima"/> </record>
-        <record id="reg_asima_alqadsiya" model="kuwait.governorate"> <field name="name">القادسية</field> <field name="governorate_id" ref="gov_asima"/> </record>
+        <record id="reg_asima_alqadsiya" model="kuwait.region"> <field name="name">القادسية</field> <field name="governorate_id" ref="gov_asima"/> </record>
         <record id="reg_asima_qurtuba" model="kuwait.region"> <field name="name">قرطبة</field> <field name="governorate_id" ref="gov_asima"/> </record>
         <record id="reg_asima_alsurra" model="kuwait.region"> <field name="name">السرة</field> <field name="governorate_id" ref="gov_asima"/> </record>
         <record id="reg_asima_alyarmouk" model="kuwait.region"> <field name="name">اليرموك</field> <field name="governorate_id" ref="gov_asima"/> </record>
