@@ -22,8 +22,12 @@
                         <!-- This forces a page break so every pledge starts on a new page -->
                         <div class="page" style="page-break-after: always; direction: rtl; text-align: right; font-family: Arial, sans-serif;">
                             
-                            <!-- This renders the HTML that Python injected data into -->
-                            <div t-out="pledge.generated_html"/>
+                            <!-- 
+                                THE FIX IS HERE: 
+                                t-raw tells the PDF engine to render the tags as actual HTML 
+                                (bold, tables, layout) instead of just raw text.
+                            -->
+                            <div t-raw="pledge.generated_html"/>
                             
                         </div>
 
