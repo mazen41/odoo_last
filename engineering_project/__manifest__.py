@@ -10,6 +10,7 @@
         'engineering_core',
     ],
     'data': [
+        'security/ir.model.access.csv',  # <--- THIS LINE IS PROBABLY MISSING OR AT THE BOTTOM. MOVE IT TO THE TOP.
         'reports/initial_design_report.xml', # <--- ADD THIS
         'views/project_project_views.xml',
         'data/project_task_type_data.xml',
