@@ -1,12 +1,15 @@
 <odoo>
-    <record id="edit_project_form_inherit_pledges" model="ir.ui.view">
-        <field name="name">project.project.form.inherit.pledges</field>
-        <field name="model">project.project</field>
-        <field name="inherit_id" ref="project.edit_project"/>
+    <record id="edit_task_form_inherit_pledges" model="ir.ui.view">
+        <field name="name">project.task.form.inherit.pledges</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_form2"/>
         <field name="arch" type="xml">
             
             <xpath expr="//notebook" position="inside">
-                <page string="تعهدات البلدية (Municipality Pledges)" name="municipality_pledges">
+                <!-- THE NEW TAB, ONLY VISIBLE FOR THE CORRECT STAGE -->
+                <page string="تعهدات البلدية (Pledges)" 
+                      name="municipality_pledges" 
+                      invisible="stage_id.name != 'التعاقد والوثائق'">
                     
                     <button name="action_load_required_pledges" 
                             string="تحميل التعهدات المطلوبة (Load Required Pledges)" 
