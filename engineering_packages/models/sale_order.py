@@ -31,7 +31,7 @@ class SaleOrder(models.Model):
                 if feature.included:
                     res += f'<li style="margin-bottom: 10px;"><span style="color: green; margin-left: 8px;">✔</span> {feature.name}</li>'
                 else:
-                    res += f'<li style="margin-bottom: 10px; color: #999;"><span style="color: red; margin-left: 8px;">✘</span> <s>{feature.name}</s></li>'
+                    res += f'<li style="margin-bottom: 10px; color: #999;"><span style="color: red; margin-left: 8px;"></span> <s>{feature.name}</s></li>'
             res += '</ul>'
             order.package_features_html = res
 
