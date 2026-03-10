@@ -1,4 +1,4 @@
- # -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 import urllib.parse
@@ -118,22 +118,35 @@ class SaleOrder(models.Model):
             'block_no': self.block_no,
             'street_no': self.street_no,
             'area': self.area,
-                  # Update these keys to match the new fields:
-        'governorate_id': self.governorate_id.id, 
-        'region_id': self.region_id.id,
+            'governorate_id': self.governorate_id.id, 
+            'region_id': self.region_id.id,
         }
         project = self.env['project.project'].create(project_vals)
         
-         # --- FIXED STAGES TO MATCH YOUR IMAGE EXACTLY ---
-        stages = [
-            'التصميم المبدئي', 
-            'التعاقد والوثائق', 
-            'المخطط الانشائي', 
-            'الموافقات', 
-            'التصميمات التفصيلية', 
-            'الإشراف', 
-            'إنهاء المشروع'
-        ]
+        # --- CONDITIONAL STAGES LOGIC ---
+        if self.building_type == 'residential': # If 'نوع العقار' is 'سكن خاص'
+            stages = [
+                'التصميم المبدئي', 
+                'التعاقد والوثائق', 
+                'سيستم الأعمدة', 
+                'الواجهات', 
+                'رسوم البلدية', 
+                'مرحلة التراخيص', 
+                'مخطط إنشائي', 
+                'مخططات تفصيلية', 
+                'الإشراف'
+            ]
+        else: # For any other 'building_type'
+            stages = [
+                'التصميم المبدئي', 
+                'التعاقد والوثائق', 
+                'المخطط الانشائي', 
+                'الموافقات', 
+                'التصميمات التفصيلية', 
+                'الإشراف', 
+                'إنهاء المشروع'
+            ]
+
         for index, stage_name in enumerate(stages):
             self.env['project.task.type'].create({
                 'name': stage_name, 
