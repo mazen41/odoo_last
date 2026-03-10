@@ -13,14 +13,17 @@
                         <field name="service_type" widget="radio" options="{'horizontal': true}"/>
                     </group>
                     <group>
-                        <!-- The 'governorate' field has been removed as requested. -->
-                        <!-- The 'region' field now stands alone, directly providing the full list of areas with governorate separators. -->
-                        
-                        <!-- NEW ODOO 17 SYNTAX HERE -->
-                        <field name="region" 
-                               required="True" 
+                        <!-- Updated to use the new Many2one fields for CRM Lead -->
+                        <field name="governorate_id"
+                               required="True"
+                               options="{'no_create': True, 'no_open': True}"
+                               placeholder="اختر المحافظة"/>
+                        <field name="region_id"
+                               domain="[('governorate_id', '=', governorate_id)]"
+                               required="True"
+                               options="{'no_create': True, 'no_open': True}"
                                placeholder="اختر المنطقة"/>
-                        
+
                         <field name="area"/>
                         <field name="block_no"/>
                         <field name="street_no"/>
