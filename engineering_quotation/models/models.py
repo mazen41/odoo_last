@@ -37,7 +37,7 @@ class SaleOrder(models.Model):
 
     plot_no = fields.Char(string="رقم القسيمة")
     block_no = fields.Char(string="القطعة")
-    street_no = fields.Char(string="الشارع")
+    street_no = fields.Char(string="الضاحيه")
     area = fields.Char(string="مساحة الارض")
 
     project_id = fields.Many2one('project.project', string='Project', copy=False)
@@ -209,7 +209,7 @@ class ProjectProject(models.Model):
     service_type = fields.Selection([('new_construction', 'بناء جديد'), ('demolition', 'هدم'), ('modification', 'تعديل'), ('addition', 'اضافة'), ('addition_modification', 'تعديل واضافة'), ('supervision_only', 'إشراف هندسي فقط'), ('renovation', 'ترميم'), ('internal_partitions', 'قواطع داخلية'), ('shades_garden', 'مظلات / حدائق')], string="نوع الخدمة")
     plot_no = fields.Char(string="رقم القسيمة")
     block_no = fields.Char(string="القطعة")
-    street_no = fields.Char(string="الشارع")
+    street_no = fields.Char(string="الضاحيه")
     area = fields.Char(string="مساحة الارض")
     # NEW FIELDS
     governorate_id = fields.Many2one('kuwait.governorate', string="المحافظة")
