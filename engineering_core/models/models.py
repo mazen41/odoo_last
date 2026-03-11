@@ -28,7 +28,7 @@ class ResPartner(models.Model):
     civil_number = fields.Char(string="الرقم المدني (Civil ID)")
     plot_no = fields.Char(string="رقم القسيمة (Plot)")
     block_no = fields.Char(string="القطعة (Block)")
-    street_no = fields.Char(string="الشارع (Street)")
+    street_no = fields.Char(string="الضاحيه")
     area = fields.Char(string="مساحة الارض (Area)")
     
     # Updated to Many2one
@@ -46,7 +46,7 @@ class CrmLead(models.Model):
     service_type = fields.Selection([('new_construction', 'بناء جديد'), ('demolition', 'هدم'), ('modification', 'تعديل'), ('addition', 'اضافة'), ('addition_modification', 'تعديل واضافة'), ('supervision_only', 'إشراف هندسي فقط'), ('renovation', 'ترميم'), ('internal_partitions', 'قواطع داخلية'), ('shades_garden', 'مظلات / حدائق')], string="نوع الخدمة")
     plot_no = fields.Char(string="رقم القسيمة (Plot)")
     block_no = fields.Char(string="القطعة (Block)")
-    street_no = fields.Char(string="الشارع (Street)")
+    street_no = fields.Char(string="الضاحيه")
     area = fields.Char(string="مساحة الارض (Area)")
     
     # Updated to Many2one
@@ -77,7 +77,7 @@ class SaleOrder(models.Model):
 
     plot_no = fields.Char(string="رقم القسيمة", store=True)
     block_no = fields.Char(string="القطعة", store=True)
-    street_no = fields.Char(string="الشارع", store=True)
+    street_no = fields.Char(string="الضاحيه", store=True)
     area = fields.Char(string="مساحة الارض", store=True)
     
     # Updated to Many2one
