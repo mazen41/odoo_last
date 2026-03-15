@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
+import logging # Import logging
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
 import datetime
+
+_logger = logging.getLogger(__name__) # Initialize logger
 
 # 1. Add our custom fields to Odoo's native Sign Template
 class SignTemplate(models.Model):
@@ -70,7 +73,7 @@ class ProjectTask(models.Model):
 
         project = self.project_id
         
-        # --- IMPORTANT FIX 1: Ensure project has a partner ---
+        # --- FIX 1: Ensure project has a partner ---
         if not project.partner_id:
             raise UserError(_("لا يمكن إنشاء تعهدات بدون عميل مرتبط بالمشروع. يرجى تعيين عميل للمشروع أولاً."))
         
@@ -90,7 +93,11 @@ class ProjectTask(models.Model):
         }
 
         # Get the default role (usually Customer/Partner) to assign the document to
-        role_id = self.env.ref('sign.sign_item_role_customer').id
+        role_customer = self.env.ref('sign.sign_item_role_customer', raise_if_not_found=False)
+        if not role_customer:
+            _logger.error("Sign item role 'Customer' (sign.sign_item_role_customer) not found.")
+            raise UserError(_("خطأ: لم يتم العثور على دور 'العميل' في تطبيق التوقيع. يرجى التحقق من إعدادات تطبيق التوقيع."))
+        role_id = role_customer.id
 
         generated_requests = self.env['sign.request']
 
@@ -102,13 +109,26 @@ class ProjectTask(models.Model):
 
             template = pledge.sign_template_id
             
-            # Prepare auto-filled items for the Sign Request
+            if not template:
+                _logger.warning(f"Pledge line {pledge.id} has no sign template assigned.")
+                continue
+
+            # Ensure the template has sign items
+            if not template.sign_item_ids:
+                _logger.warning(f"Sign template '{template.name}' (ID: {template.id}) has no sign items defined. Skipping.")
+                # We can't create a sign request with pre-fillable fields if no fields exist on the template.
+                continue
+
             sign_request_items = []
             for item in template.sign_item_ids:
-                # --- IMPORTANT FIX 2: Add partner_id to each sign_request_item ---
+                # --- CRITICAL CHECK: Ensure 'item' is a valid record and has an ID ---
+                if not item or not item.exists() or not item.id:
+                    _logger.warning(f"Skipping invalid or missing sign item (ID: {item.id}) found in template '{template.name}'.")
+                    continue
+
                 item_vals = {
                     'role_id': role_id,
-                    'sign_item_id': item.id,
+                    'sign_item_id': item.id, # This is the field causing the error
                     'partner_id': project_partner_id, # This links the item to the project's partner
                 }
                 
@@ -118,23 +138,33 @@ class ProjectTask(models.Model):
                 
                 sign_request_items.append((0, 0, item_vals))
 
-            # Create the actual Sign Request (The Document)
-            sign_request = self.env['sign.request'].create({
-                'template_id': template.id,
-                'reference': f"{template.name} - {project.name}",
-                # --- IMPORTANT FIX 3: Remove 'approver_id' from here ---
-                'request_item_ids': sign_request_items,
-                'state': 'sent', # Mark as ready/sent
-            })
+            # --- CRITICAL CHECK: Ensure we actually have items to create ---
+            if not sign_request_items:
+                _logger.warning(f"No valid sign request items could be prepared for template '{template.name}'. "
+                                f"This might mean fields on the PDF are not correctly configured or named. Skipping.")
+                continue
 
-            # Link the generated document to the pledge line
-            pledge.sign_request_id = sign_request.id
-            generated_requests |= sign_request
+            try:
+                # Create the actual Sign Request (The Document)
+                sign_request = self.env['sign.request'].create({
+                    'template_id': template.id,
+                    'reference': f"{template.name} - {project.name}",
+                    'request_item_ids': sign_request_items,
+                    'state': 'sent', # Mark as ready/sent
+                })
+
+                # Link the generated document to the pledge line
+                pledge.sign_request_id = sign_request.id
+                generated_requests |= sign_request
+            except Exception as e:
+                _logger.error(f"Failed to create sign request for template '{template.name}' (ID: {template.id}). Error: {e}")
+                raise UserError(_(f"فشل إنشاء مستند التوقيع للقالب '{template.name}'. يرجى التحقق من إعدادات القالب وتفاصيل المشروع. رسالة الخطأ الفنية: {e}"))
+
 
         # Action to open the generated Sign Requests so the user can see/print them
         if len(generated_requests) == 1:
             return generated_requests.go_to_document()
-        else:
+        elif len(generated_requests) > 1:
             return {
                 'name': 'Generated Pledges',
                 'type': 'ir.actions.act_window',
@@ -142,3 +172,5 @@ class ProjectTask(models.Model):
                 'view_mode': 'kanban,tree,form',
                 'domain': [('id', 'in', generated_requests.ids)],
             }
+        else:
+            raise UserError(_("لم يتم إنشاء أي مستندات توقيع. يرجى التأكد من أن التعهدات المحددة لديها قوالب صالحة."))
