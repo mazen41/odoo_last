@@ -1,36 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="crm_lead_view_form_engineering" model="ir.ui.view">
-        <field name="name">crm.lead.form.engineering</field>
-        <field name="model">crm.lead</field>
-        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
-        <field name="arch" type="xml">
-            <xpath expr="//notebook" position="before">
-                <separator string="تفاصيل العقار والخدمة"/>
-                <group>
-                    <group>
-                        <field name="building_type" widget="radio" options="{'horizontal': true}"/>
-                        <field name="service_type" widget="radio" options="{'horizontal': true}"/>
-                    </group>
-                    <group>
-                        <!-- Updated to use the new Many2one fields for CRM Lead -->
-                        <field name="governorate_id"
-                               required="True"
-                               options="{'no_create': True, 'no_open': True}"
-                               placeholder="اختر المحافظة"/>
-                        <field name="region_id"
-                               domain="[('governorate_id', '=', governorate_id)]"
-                               required="True"
-                               options="{'no_create': True, 'no_open': True}"
-                               placeholder="اختر المنطقة"/>
-
-                        <field name="area"/>
-                        <field name="block_no"/>
-                        <field name="street_no"/>
-                        <field name="plot_no"/>
-                    </group>
-                </group>
-            </xpath>
-        </field>
-    </record>
+    <!-- We removed the CRM view inheritance entirely because we are just using Odoo's default CRM fields now -->
 </odoo>
