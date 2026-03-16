@@ -36,10 +36,10 @@ class ProjectTask(models.Model):
                         'sign_template_id': template.id,
                     })
 
-    def action_generate_commitments_pdf(self):
+   def action_generate_commitments_pdf(self):
         """ Creates a Sign Request and Auto-fills the variables """
         self.ensure_one()
-        
+
         required_commitments = self.commitment_ids.filtered(lambda p: p.is_required)
         if not required_commitments:
             raise UserError(_("Please mark at least one commitment as 'Required' first. (يرجى تحديد تعهد واحد على الأقل كمطلوب)"))
@@ -49,7 +49,6 @@ class ProjectTask(models.Model):
             raise UserError(_("The project must have a Customer to generate documents. (يجب تحديد عميل للمشروع)"))
 
         # --- AUTOFILL DICTIONARY ---
-        # The KEYS here (left side) MUST match the "Name" you give the fields inside the Odoo Sign App!
         replacements = {
             'Name': project.partner_id.name or "",
             'Date': datetime.date.today().strftime("%Y/%m/%d"),
@@ -65,6 +64,10 @@ class ProjectTask(models.Model):
         if not role_customer:
             raise UserError(_("Error: 'Customer' role not found in Sign application."))
 
+        # Find the Sign Item Types for auto-fill based on their internal name (e.g., 'signature', 'initials', 'text')
+        # This part might need further refinement based on how your templates are set up and named.
+        # For auto-fill, you usually link the 'name' of the field in your replacements dict to the 'name' of the sign.item on the template.
+
         generated_requests = self.env['sign.request']
 
         for commitment in required_commitments:
@@ -78,25 +81,31 @@ class ProjectTask(models.Model):
                 _logger.warning(f"Template '{template.name}' has no sign items defined.")
                 continue
 
-            sign_request_items = []
-            for item in template.sign_item_ids:
+            sign_request_items_vals = []
+            for sign_item_template in template.sign_item_ids: # 'sign_item_template' is a sign.item record
                 item_vals = {
-                    'role_id': role_customer.id,
-                    'sign_item_id': item.id,
                     'partner_id': project.partner_id.id,
+                    'role_id': role_customer.id,
+                    'type_id': sign_item_template.type_id.id, # Link to the sign.item.type
+                    'name': sign_item_template.name,         # Crucial for matching auto-fill fields
+                    'x': sign_item_template.x,               # Copy position from template
+                    'y': sign_item_template.y,               # Copy position from template
+                    'width': sign_item_template.width,       # Copy size from template
+                    'height': sign_item_template.height,     # Copy size from template
+                    'page': sign_item_template.page,         # Copy page number
                 }
-                
+
                 # If the field Name in the Sign App matches our dictionary, inject the data!
-                if item.name in replacements:
-                    item_vals['value'] = str(replacements[item.name])
-                
-                sign_request_items.append((0, 0, item_vals))
+                if sign_item_template.name in replacements:
+                    item_vals['value'] = str(replacements[sign_item_template.name])
+
+                sign_request_items_vals.append((0, 0, item_vals))
 
             # Create the document
             sign_request = self.env['sign.request'].create({
                 'template_id': template.id,
                 'reference': f"{template.name} - {project.name}",
-                'request_item_ids': sign_request_items,
+                'request_item_ids': sign_request_items_vals,
                 'state': 'sent', # Mark as ready
             })
 
@@ -104,4 +113,6 @@ class ProjectTask(models.Model):
             commitment.sign_request_id = sign_request.id
             generated_requests |= sign_request
 
+        # Open the generated documents for the user to see/
+        # You'll likely want to return an action to open the sign.request list or form vi
         # Open the generated documents for the user to see/
