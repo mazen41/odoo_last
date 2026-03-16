@@ -35,7 +35,7 @@ class ProjectTask(models.Model):
                     })
 
     def action_generate_commitments_pdf(self):
-        """ Creates Sign Requests by directly injecting items during creation (Odoo 17 fix) """
+        """ Creates Sign Requests using the native template.create_sign_request method. """
         self.ensure_one()
 
         required_commitments = self.commitment_ids.filtered(lambda p: p.is_required)
@@ -54,7 +54,7 @@ class ProjectTask(models.Model):
         replacements = {
             'Name': project.partner_id.name or "",
             'Date': fields.Date.context_today(self).strftime("%Y/%m/%d"),
-            'Governorate': project.governorate_id.name if hasattr(project, 'governorate_id') and project.governorate_id else "",
+            'Governorate': project.governorate_id.name if hasattr(project, 'governorate_id') and project.govergorate_id else "",
             'Region': project.region_id.name if hasattr(project, 'region_id') and project.region_id else "",
             'Block': project.block_no or "" if hasattr(project, 'block_no') else "",
             'Plot': project.plot_no or "" if hasattr(project, 'plot_no') else "",
@@ -73,44 +73,33 @@ class ProjectTask(models.Model):
             if not template.sign_item_ids:
                 raise UserError(_(f"Template '{template.name}' has no fields/signature configured. Please add them in the Sign app."))
 
-            # ==========================================
-            # THE FIX: Build items BEFORE creation,
-            # using 'template_item_id' to infer properties.
-            # ==========================================
-            request_item_vals_list = []
+            _logger.info(f"Attempting to create sign request for template: {template.name} (ID: {template.id}) using template.create_sign_request()")
             
-            for template_item in template.sign_item_ids:
-                # 1. Check if this specific item is assigned to the Customer role
-                partner_id = project.partner_id.id if template_item.responsible_id.id == role_customer.id else False
-                
-                # 2. Check if we have an auto-fill value for this field name
-                value = replacements.get(template_item.name, "") if template_item.name else ""
+            # ====================================================================
+            # THE NEW FIX: Use the template's own method to create the sign request
+            # This handles item creation and linking internally.
+            # ====================================================================
+            sign_request = template.create_sign_request(
+                signer_ids=[
+                    {
+                        'partner_id': project.partner_id.id,
+                        'role_id': role_customer.id,
+                    }
+                ],
+                reference=f"{template.name} - {project.name}",
+                # Additional context that Odoo might pick up for auto-filling
+                # The 'sign.template.create_sign_request' method's parameters
+                # can vary slightly by Odoo version, but 'signer_ids' and 'reference'
+                # are generally standard.
+            )
+            
+            _logger.info(f"Successfully created sign request: {sign_request.id} using template.create_sign_request().")
 
-                # 3. Add to our creation payload
-                request_item_vals_list.append((0, 0, {
-                    'template_item_id': template_item.id, # <--- USE THIS INSTEAD!
-                    'name': template_item.name,
-                    'required': template_item.required,
-                    'responsible_id': template_item.responsible_id.id,
-                    'partner_id': partner_id,
-                    'page': template_item.page,
-                    'posX': template_item.posX,
-                    'posY': template_item.posY,
-                    'width': template_item.width,
-                    'height': template_item.height,
-                    'value': str(value),
-                    # Do NOT explicitly set 'sign_item_type_id' or 'type_id' here.
-                    # Odoo will derive it from 'template_item_id'.
-                }))
-
-            # ==========================================
-            # Create the request WITH the items included
-            # ==========================================
-            sign_request = self.env['sign.request'].create({
-                'template_id': template.id,
-                'reference': f"{template.name} - {project.name}",
-                'request_item_ids': request_item_vals_list, # Injecting items here prevents the Validation Error!
-            })
+            # After creation, iterate through the *newly created* request items
+            # to apply the autofill values.
+            for item in sign_request.request_item_ids:
+                if item.name and item.name in replacements:
+                    item.write({'value': replacements[item.name]})
 
             # Send the request
             sign_request.action_sent()
