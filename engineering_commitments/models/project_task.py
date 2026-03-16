@@ -19,7 +19,8 @@ class ProjectTask(models.Model):
         """ Loads Sign templates based on the project's building type """
         for task in self:
             # Assuming your project has a building_type field. If not, this acts as a safeguard.
-            building_type = task.project_id.building_type if hasattr(task.project_id, 'building_type') else False
+            # Make sure project_id exists before trying to access its attributes.
+            building_type = task.project_id.building_type if task.project_id and hasattr(task.project_id, 'building_type') else False
 
             if not building_type:
                 domain = [('is_commitment', '=', True), ('building_type', '=', 'all')]
@@ -35,20 +36,20 @@ class ProjectTask(models.Model):
                         'task_id': task.id,
                         'sign_template_id': template.id,
                     })
-        # Important: Reload the view to show the newly loaded commitments
+        # Important: Return an action to reload the view or show a notification
         return {
             'type': 'ir.actions.client',
             'tag': 'display_notification',
             'params': {
                 'title': _("Commitments Loaded!"),
-                'message': _("Templates have been successfully loaded."),
+                'message': _("Templates have been successfully loaded for this task."),
                 'type': 'success',
                 'sticky': False,
             }
         }
 
 
-   def action_generate_commitments_pdf(self):
+    def action_generate_commitments_pdf(self):
         """ Creates a Sign Request and Auto-fills the variables """
         self.ensure_one()
 
@@ -65,8 +66,9 @@ class ProjectTask(models.Model):
         replacements = {
             'Name': project.partner_id.name or "",
             'Date': datetime.date.today().strftime("%Y/%m/%d"),
-            'Governorate': project.governorate_id.name if hasattr(project, 'governorate_id') and project.governorate_id else "",
-            'Region': project.region_id.name if hasattr(project, 'region_id') and project.region_id else "",
+            # Ensure project_id and the related fields exist before accessing them
+            'Governorate': project.governorate_id.name if project.governorate_id and hasattr(project, 'governorate_id') else "",
+            'Region': project.region_id.name if project.region_id and hasattr(project, 'region_id') else "",
             'Block': project.block_no if hasattr(project, 'block_no') else "",
             'Plot': project.plot_no if hasattr(project, 'plot_no') else "",
             'Street': project.street_no if hasattr(project, 'street_no') else "",
@@ -75,7 +77,7 @@ class ProjectTask(models.Model):
         # Find the default 'Customer' role for signing
         role_customer = self.env.ref('sign.sign_item_role_customer', raise_if_not_found=False)
         if not role_customer:
-            raise UserError(_("Error: 'Customer' role not found in Sign application."))
+            raise UserError(_("Error: 'Customer' role not found in Sign application. Ensure 'sign.sign_item_role_customer' XML ID exists."))
 
         generated_requests = self.env['sign.request']
 
@@ -87,7 +89,7 @@ class ProjectTask(models.Model):
 
             template = commitment.sign_template_id
             if not template.sign_item_ids:
-                _logger.warning(f"Template '{template.name}' has no sign items defined.")
+                _logger.warning(f"Template '{template.name}' has no sign items defined. Skipping generation for this commitment.")
                 continue
 
             sign_request_items_vals = []
@@ -97,7 +99,8 @@ class ProjectTask(models.Model):
                     'role_id': role_customer.id,
                     'type_id': sign_item_template.type_id.id, # Link to the sign.item.type (e.g., Signature, Text)
                     'name': sign_item_template.name,         # Crucial for matching auto-fill fields (e.g., "Name", "Date")
-                    # REMOVED x, y, width, height, page as they are no longer direct attributes of sign.item
+                    # In Odoo 17+, x, y, width, height, page are NOT direct attributes of sign.item
+                    # The sign.request object, by linking to template_id, handles the field positioning implicitly.
                 }
 
                 # If the field Name in the Sign App matches our dictionary, inject the data!
@@ -118,7 +121,7 @@ class ProjectTask(models.Model):
             commitment.sign_request_id = sign_request.id
             generated_requests |= sign_request
 
-        # Return an action to open the generated Sign Requests
+        # Return an action to open the generated Sign Requests for the user to see
         if generated_requests:
             return {
                 'name': _("Generated Commitments"),
@@ -126,8 +129,19 @@ class ProjectTask(models.Model):
                 'res_model': 'sign.request',
                 'views': [[False, 'tree'], [False, 'form']],
                 'domain': [('id', 'in', generated_requests.ids)],
-                'context': {'active_id': self.id, 'active_model': self._name},
-                'target': 'current',
+                # Optional: Pass context to the new action, e.g., to filter by related project
+                'context': {'default_project_id': self.project_id.id, 'search_default_template_id': generated_requests.mapped('template_id').ids},
+                'target': 'current', # Opens in the current window (replaces task form)
             }
-        # If no requests were generated (e.g., no required commitments), just close
-        return {'type': 'ir.actions.act_window_close'}
+        # If no requests were generated (e.g., no required commitments found or template issues),
+        # just show a notification and close the wizard/stay on the current view.
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': _("No Commitments Generated"),
+                'message': _("No new PDF commitments were generated at this time."),
+                'type': 'info',
+                'sticky': False,
+            }
+        }
