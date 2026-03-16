@@ -15,6 +15,12 @@
         'views/sign_template_views.xml',
         'views/project_task_views.xml',
     ],
+     'assets': {
+        'web.assets_backend': [
+            'engineering_commitments/static/src/views/sign_template_form_view.js',
+            'engineering_commitments/static/src/xml/sign_template_form_fields.xml',
+        ],
+    },
     'installable': True,
     'application': False,
     'license': 'LGPL-3',
