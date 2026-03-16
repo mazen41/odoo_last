@@ -74,7 +74,8 @@ class ProjectTask(models.Model):
                 raise UserError(_(f"Template '{template.name}' has no fields/signature configured. Please add them in the Sign app."))
 
             # ==========================================
-            # THE FIX: Build items BEFORE creation
+            # THE FIX: Build items BEFORE creation,
+            # using 'template_item_id' to infer properties.
             # ==========================================
             request_item_vals_list = []
             
@@ -87,7 +88,7 @@ class ProjectTask(models.Model):
 
                 # 3. Add to our creation payload
                 request_item_vals_list.append((0, 0, {
-                    'sign_item_type_id': template_item.type_id.id, # <--- CORRECTED FIELD NAME
+                    'template_item_id': template_item.id, # <--- USE THIS INSTEAD!
                     'name': template_item.name,
                     'required': template_item.required,
                     'responsible_id': template_item.responsible_id.id,
@@ -98,6 +99,8 @@ class ProjectTask(models.Model):
                     'width': template_item.width,
                     'height': template_item.height,
                     'value': str(value),
+                    # Do NOT explicitly set 'sign_item_type_id' or 'type_id' here.
+                    # Odoo will derive it from 'template_item_id'.
                 }))
 
             # ==========================================
