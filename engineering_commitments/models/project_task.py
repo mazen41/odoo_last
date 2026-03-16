@@ -51,13 +51,13 @@ class ProjectTask(models.Model):
         # --- AUTOFILL DICTIONARY ---
         # The KEYS here (left side) MUST match the "Name" you give the fields inside the Odoo Sign App!
         replacements = {
-            'partner_name': project.partner_id.name or "",
-            'date': datetime.date.today().strftime("%Y/%m/%d"),
-            'governorate': project.governorate_id.name if hasattr(project, 'governorate_id') and project.governorate_id else "",
-            'region': project.region_id.name if hasattr(project, 'region_id') and project.region_id else "",
-            'block_no': project.block_no if hasattr(project, 'block_no') else "",
-            'plot_no': project.plot_no if hasattr(project, 'plot_no') else "",
-            'street_no': project.street_no if hasattr(project, 'street_no') else "",
+            'Name': project.partner_id.name or "",
+            'Date': datetime.date.today().strftime("%Y/%m/%d"),
+            'Governorate': project.governorate_id.name if hasattr(project, 'governorate_id') and project.governorate_id else "",
+            'Region': project.region_id.name if hasattr(project, 'region_id') and project.region_id else "",
+            'Block': project.block_no if hasattr(project, 'block_no') else "",
+            'Plot': project.plot_no if hasattr(project, 'plot_no') else "",
+            'Street': project.street_no if hasattr(project, 'street_no') else "",
         }
 
         # Find the default 'Customer' role for signing
