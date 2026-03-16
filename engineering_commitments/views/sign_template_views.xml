@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="sign_template_view_form_inherit_engineering" model="ir.ui.view">
+        <field name="name">sign.template.form.inherit.engineering</field>
+        <field name="model">sign.template</field>
+        <field name="inherit_id" ref="sign.sign_template_view_form"/>
+        <field name="arch" type="xml">
+            
+            <!-- We place our custom fields right after the 'Responsible' field -->
+            <xpath expr="//field[@name='responsible_id']" position="after">
+                <field name="is_commitment"/>
+                <!-- In Odoo 17, we use the invisible attribute directly -->
+                <field name="building_type" invisible="not is_commitment"/>
+            </xpath>
+
+        </field>
+    </record>
+</odoo>
