@@ -99,8 +99,9 @@ class ProjectTask(models.Model):
                         
                         if signer_record:
                             try:
-                                # ADDED .sudo() HERE TO BYPASS PERMISSION ERROR!
+                                # We MUST include sign_request_id here or the database rejects it silently!
                                 self.env['sign.request.item.value'].sudo().create({
+                                    'sign_request_id': sign_request.id,  # <--- THIS WAS THE MISSING LINK
                                     'sign_request_item_id': signer_record[0].id,
                                     'sign_item_id': template_field.id,
                                     'value': str(val_to_insert),
