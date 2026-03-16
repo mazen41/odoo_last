@@ -6,11 +6,14 @@
         <field name="inherit_id" ref="sign.sign_template_view_form"/>
         <field name="arch" type="xml">
             
-            <!-- We place our custom fields right after the 'Responsible' field -->
-            <xpath expr="//field[@name='responsible_id']" position="after">
-                <field name="is_commitment"/>
-                <!-- In Odoo 17, we use the invisible attribute directly -->
-                <field name="building_type" invisible="not is_commitment"/>
+            <!-- SAFE XPATH: We place our fields in a new group inside the main sheet -->
+            <xpath expr="//sheet" position="inside">
+                <group string="Engineering Configuration (إعدادات الهندسة)">
+                    <group>
+                        <field name="is_commitment"/>
+                        <field name="building_type" invisible="not is_commitment"/>
+                    </group>
+                </group>
             </xpath>
 
         </field>
