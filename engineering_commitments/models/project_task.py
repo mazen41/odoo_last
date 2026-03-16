@@ -17,7 +17,6 @@ class ProjectTask(models.Model):
     def action_load_commitments(self):
         """ Loads Sign templates based on the project's building type """
         for task in self:
-            # Assuming your project has a building_type field. If not, this acts as a safeguard.
             building_type = task.project_id.building_type if hasattr(task.project_id, 'building_type') else False
             
             if not building_type:
@@ -52,9 +51,7 @@ class ProjectTask(models.Model):
         if not role_customer:
             raise UserError(_("Error: The 'Customer' role could not be found in the Sign application. Please check its configuration."))
 
-        # --- AUTOFILL DICTIONARY ---
-        # The keys here ('Name', 'Date', etc.) MUST match the 'Field Name'
-        # you set on the Text fields in your Sign Template.
+        # --- AUTOFILL DICTIONCTIONARY ---
         replacements = {
             'Name': project.partner_id.name or "",
             'Date': fields.Date.context_today(self).strftime("%Y/%m/%d"),
@@ -68,7 +65,6 @@ class ProjectTask(models.Model):
         generated_requests = self.env['sign.request']
 
         for commitment in required_commitments:
-            # Skip if already generated and not canceled
             if commitment.sign_request_id and commitment.sign_request_id.state != 'canceled':
                 generated_requests |= commitment.sign_request_id
                 continue
@@ -78,49 +74,47 @@ class ProjectTask(models.Model):
                 _logger.warning(f"Template '{template.name}' has no sign items defined and will be skipped.")
                 continue
 
-            # --- THE CORRECT APPROACH ---
+            # --- CORRECTED APPROACH FOR ODOO 14/15 ---
 
-            # 1. Create the Sign Request from the template with the signer.
-            #    Odoo automatically copies the sign items from the template.
+            # 1. Create the Sign Request from the template. This auto-creates the items.
+            #    NOTE: We REMOVED the 'signer_ids' key from this create call.
             sign_request = self.env['sign.request'].create({
                 'template_id': template.id,
                 'reference': f"{template.name} - {project.name}",
-                'signer_ids': [(0, 0, {
-                    'role_id': role_customer.id,
-                    'partner_id': project.partner_id.id,
-                })],
             })
 
-            # 2. Loop through the NEWLY created request items and fill in the values.
+            # 2. Assign the partner to the newly created items that have the 'Customer' role.
+            customer_items = sign_request.request_item_ids.filtered(
+                lambda item: item.role_id.id == role_customer.id
+            )
+            if customer_items:
+                customer_items.write({'partner_id': project.partner_id.id})
+
+            # 3. Loop through the items again to fill in the values.
             for item in sign_request.request_item_ids:
-                # The 'name' of the sign item in the template is copied over.
-                # We check if this name is a key in our replacements dictionary.
                 if item.name and item.name in replacements:
                     item.write({'value': replacements[item.name]})
 
-            # 3. Now that values are filled, send the request. This changes the state to 'sent'.
+            # 4. Now that values and signers are set, send the request.
             sign_request.action_sent()
 
-            # Link document to the task line and collect it for the final action
+            # Link document to the task line
             commitment.sign_request_id = sign_request.id
             generated_requests |= sign_request
 
-        # If no new documents were generated, do nothing.
         if not generated_requests:
             return True
 
-        # --- Return an action to open the generated documents for the user ---
+        # Return an action to open the generated documents for the user
         action = self.env['ir.actions.actions']._for_xml_id('sign.sign_request_action')
         
         if len(generated_requests) == 1:
-            # If only one was created, open it directly in form view
             action.update({
                 'view_mode': 'form',
                 'res_id': generated_requests.id,
                 'views': [(False, 'form')],
             })
         else:
-            # If multiple were created, open them in a list view
             action['domain'] = [('id', 'in', generated_requests.ids)]
         
         return action
