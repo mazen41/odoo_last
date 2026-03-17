@@ -52,4 +52,4 @@ class ProjectTask(models.Model):
 
         # Trigger the custom QWeb PDF report for the current project.task
         # The 'self' record (project.task) will be passed as 'docs' to the QWeb template.
-        return self.env.ref('your_module_name.action_report_project_commitment').report_action(self)
+        return self.env.ref('engineering_commitments.action_report_project_commitment').report_action(self)
