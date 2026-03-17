@@ -46,17 +46,15 @@ class ProjectTask(models.Model):
         role_customer = self.env.ref('sign.sign_item_role_customer', raise_if_not_found=False)
         
         # ==========================================
-        # AUTOFILL MAPPING
+        # 1. GET VALUES (WITH "NO DATA" FALLBACKS FOR TESTING)
         # ==========================================
-        replacements = {
-            'Name': project.partner_id.name or "",
-            'Date': fields.Date.context_today(self).strftime("%Y/%m/%d"),
-            'Governorate': project.governorate_id.name if project.governorate_id else "",
-            'Region': project.region_id.name if project.region_id else "",
-            'Block': project.block_no or "",
-            'Plot': project.plot_no or "",
-            'Street': project.street_no or "",
-        }
+        val_name = project.partner_id.name or "NO NAME"
+        val_date = fields.Date.context_today(self).strftime("%Y/%m/%d")
+        val_gov = project.governorate_id.name if project.governorate_id else "NO GOV"
+        val_region = project.region_id.name if project.region_id else "NO REGION"
+        val_block = project.block_no or "NO BLOCK"
+        val_plot = project.plot_no or "NO PLOT"
+        val_street = project.street_no or "NO STREET"
 
         generated_requests = self.env['sign.request']
 
@@ -69,7 +67,7 @@ class ProjectTask(models.Model):
             if not template.sign_item_ids:
                 raise UserError(_(f"Template '{template.name}' has no fields/signature configured."))
 
-            # 1. Define Signers
+            # 2. Define Signers
             roles = template.sign_item_ids.mapped('responsible_id')
             signers_list = []
             for role in roles:
@@ -79,35 +77,48 @@ class ProjectTask(models.Model):
                     'partner_id': partner_id,
                 }))
 
-            # 2. Create Request
+            # 3. Create Request
             sign_request = self.env['sign.request'].create({
                 'template_id': template.id,
                 'reference': f"{template.name} - {project.name}",
                 'request_item_ids': signers_list,
             })
 
-            # 3. Autofill Values
+            # 4. BULLETPROOF AUTOFILL MATCHING
             for template_field in template.sign_item_ids:
-                # ==========================================
-                # THE FIX IS HERE:
-                # We strictly use type_id.name so we match "Governorate" 
-                # instead of Odoo's hidden names like "Governorate 1"
-                # ==========================================
-                field_type_name = template_field.type_id.name 
+                # Get the name and type, and make them lowercase to avoid case-sensitivity issues
+                t_name = (template_field.name or '').lower()
+                t_type = (template_field.type_id.name or '').lower()
                 
-                if field_type_name in replacements:
-                    val_to_insert = replacements[field_type_name]
-                    
-                    if val_to_insert:
-                        signer_record = sign_request.request_item_ids.filtered(
-                            lambda r: r.role_id.id == template_field.responsible_id.id
-                        )
-                        if signer_record:
-                            self.env['sign.request.item.value'].sudo().create({
-                                'sign_request_item_id': signer_record[0].id,
-                                'sign_item_id': template_field.id,
-                                'value': str(val_to_insert),
-                            })
+                val_to_insert = False
+                
+                # Check if the word exists anywhere in the field name or type
+                if 'date' in t_name or 'date' in t_type or 'تاريخ' in t_name or 'تاريخ' in t_type:
+                    val_to_insert = val_date
+                elif 'governorate' in t_name or 'governorate' in t_type:
+                    val_to_insert = val_gov
+                elif 'region' in t_name or 'region' in t_type:
+                    val_to_insert = val_region
+                elif 'block' in t_name or 'block' in t_type:
+                    val_to_insert = val_block
+                elif 'plot' in t_name or 'plot' in t_type:
+                    val_to_insert = val_plot
+                elif 'street' in t_name or 'street' in t_type:
+                    val_to_insert = val_street
+                elif 'name' in t_name or 'name' in t_type or 'اسم' in t_name or 'اسم' in t_type:
+                    val_to_insert = val_name
+
+                # If we found a match, forcefully write the value into the PDF box
+                if val_to_insert:
+                    signer_record = sign_request.request_item_ids.filtered(
+                        lambda r: r.role_id.id == template_field.responsible_id.id
+                    )
+                    if signer_record:
+                        self.env['sign.request.item.value'].sudo().create({
+                            'sign_request_item_id': signer_record[0].id,
+                            'sign_item_id': template_field.id,
+                            'value': str(val_to_insert),
+                        })
 
             commitment.sign_request_id = sign_request.id
             generated_requests |= sign_request
