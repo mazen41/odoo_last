@@ -6,13 +6,15 @@
         <field name="inherit_id" ref="sign.sign_template_view_form"/>
         <field name="arch" type="xml">
             
-            <!-- Add our custom Rename button to the header -->
-            <xpath expr="//header" position="inside">
-                <button name="action_rename_template_fields" 
-                        type="object" 
-                        string="Rename Fields for Autofill" 
-                        class="oe_highlight"
-                        groups="base.group_system"/>
+            <!-- We add position="before" the sheet to CREATE the header -->
+            <xpath expr="//sheet" position="before">
+                <header>
+                    <button name="action_rename_template_fields" 
+                            type="object" 
+                            string="Rename Fields for Autofill" 
+                            class="oe_highlight"
+                            groups="base.group_system"/>
+                </header>
             </xpath>
 
             <xpath expr="//sheet" position="inside">
@@ -23,6 +25,7 @@
                     </group>
                 </group>
             </xpath>
+
         </field>
     </record>
 </odoo>
