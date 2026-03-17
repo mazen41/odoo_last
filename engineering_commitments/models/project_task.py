@@ -44,19 +44,18 @@ class ProjectTask(models.Model):
             raise UserError(_("The project must have a Customer to generate documents."))
 
         role_customer = self.env.ref('sign.sign_item_role_customer', raise_if_not_found=False)
-        if not role_customer:
-            raise UserError(_("Error: The 'Customer' role could not be found in the Sign application."))
-
-        # --- AUTOFILL DICTIONARY ---
-        # Using getattr() is the safest way to pull fields that might not exist in all Odoo setups
+        
+        # ==========================================
+        # AUTOFILL MAPPING (Using your exact Python fields)
+        # ==========================================
         replacements = {
             'Name': project.partner_id.name or "",
             'Date': fields.Date.context_today(self).strftime("%Y/%m/%d"),
-            'Governorate': getattr(project, 'governorate_id', False) and project.governorate_id.name or "",
-            'Region': getattr(project, 'region_id', False) and project.region_id.name or "",
-            'Block': getattr(project, 'block_no', False) or "",
-            'Plot': getattr(project, 'plot_no', False) or "",
-            'Street': getattr(project, 'street_no', False) or "",
+            'Governorate': project.governorate_id.name if project.governorate_id else "",
+            'Region': project.region_id.name if project.region_id else "",
+            'Block': project.block_no or "",
+            'Plot': project.plot_no or "",
+            'Street': project.street_no or "",
         }
 
         generated_requests = self.env['sign.request']
@@ -74,7 +73,7 @@ class ProjectTask(models.Model):
             roles = template.sign_item_ids.mapped('responsible_id')
             signers_list = []
             for role in roles:
-                partner_id = project.partner_id.id if role.id == role_customer.id else self.env.user.partner_id.id
+                partner_id = project.partner_id.id if (role_customer and role.id == role_customer.id) else self.env.user.partner_id.id
                 signers_list.append((0, 0, {
                     'role_id': role.id,
                     'partner_id': partner_id,
@@ -89,43 +88,32 @@ class ProjectTask(models.Model):
 
             # 3. Autofill Values
             for template_field in template.sign_item_ids:
-                field_name = template_field.name
+                # This checks the name of the field on the PDF
+                field_name = template_field.name or template_field.type_id.name
                 
                 if field_name in replacements:
                     val_to_insert = replacements[field_name]
                     
                     if val_to_insert:
-                        # Find the signer record corresponding to this field's role
                         signer_record = sign_request.request_item_ids.filtered(
                             lambda r: r.role_id.id == template_field.responsible_id.id
                         )
-                        
                         if signer_record:
-                            try:
-                                # Removed 'sign_request_id'. The model only takes item_id, template_field_id, and value.
-                                self.env['sign.request.item.value'].sudo().create({
-                                    'sign_request_item_id': signer_record[0].id,
-                                    'sign_item_id': template_field.id,
-                                    'value': str(val_to_insert),
-                                })
-                            except Exception as e:
-                                _logger.error(f"Failed to write value into {field_name}: {e}")
+                            self.env['sign.request.item.value'].sudo().create({
+                                'sign_request_item_id': signer_record[0].id,
+                                'sign_item_id': template_field.id,
+                                'value': str(val_to_insert),
+                            })
 
-            # 4. Link
             commitment.sign_request_id = sign_request.id
             generated_requests |= sign_request
 
         if not generated_requests:
             return True
 
-        # 5. Return Action
         action = self.env['ir.actions.actions']._for_xml_id('sign.sign_request_action')
         if len(generated_requests) == 1:
-            action.update({
-                'view_mode': 'form',
-                'res_id': generated_requests.id,
-                'views': [(False, 'form')],
-            })
+            action.update({'view_mode': 'form', 'res_id': generated_requests.id, 'views': [(False, 'form')]})
         else:
             action['domain'] = [('id', 'in', generated_requests.ids)]
         
