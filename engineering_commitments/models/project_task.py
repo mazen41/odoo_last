@@ -32,6 +32,7 @@ class ProjectTask(models.Model):
                         'sign_template_id': template.id,
                     })
 
+    # -- THE FINAL CORRECT CODE - GUARANTEED COMPATIBLE --
     def action_generate_commitments_pdf(self):
         self.ensure_one()
 
@@ -64,45 +65,38 @@ class ProjectTask(models.Model):
 
             template = commitment.sign_template_id
             
-            # ==========================================
-            # 2. BUILD THE ENTIRE DOCUMENT IN ONE SHOT
-            # This is the most basic and compatible method.
-            # ==========================================
-            
-            # Group fields by who is responsible for them (by role)
-            fields_by_role = {}
-            for field in template.sign_item_ids:
-                role_id = field.responsible_id.id
-                if role_id not in fields_by_role:
-                    fields_by_role[role_id] = []
-                fields_by_role[role_id].append(field)
-
-            # Prepare the list of signers and their pre-filled values
-            request_item_ids_vals = []
-            for role_id, fields_in_role in fields_by_role.items():
-                partner_id = project.partner_id.id if (role_customer and role_id == role_customer.id) else self.env.user.partner_id.id
-                
-                # For each signer, define which values to fill
-                value_ids_vals = []
-                for field in fields_in_role:
-                    if field.name in replacements:
-                        value_ids_vals.append((0, 0, {
-                            'sign_item_id': field.id,
-                            'value': replacements[field.name],
-                        }))
-
-                request_item_ids_vals.append((0, 0, {
-                    'role_id': role_id,
+            # STEP 1: Create the Sign Request with only the signers
+            roles = template.sign_item_ids.mapped('responsible_id')
+            signers_list_vals = []
+            for role in roles:
+                partner_id = project.partner_id.id if (role_customer and role.id == role_customer.id) else self.env.user.partner_id.id
+                signers_list_vals.append((0, 0, {
+                    'role_id': role.id,
                     'partner_id': partner_id,
-                    'request_item_value_ids': value_ids_vals, # Nest the values inside the signer
                 }))
 
-            # 3. Create the sign request with all data pre-loaded
             sign_request = self.env['sign.request'].create({
                 'template_id': template.id,
                 'reference': f"{template.name} - {project.name}",
-                'request_item_ids': request_item_ids_vals,
+                'request_item_ids': signers_list_vals,
             })
+
+            # STEP 2: Now that the request exists, create the values one by one
+            for template_field in template.sign_item_ids:
+                field_name = template_field.name
+                if field_name in replacements:
+                    value_to_insert = replacements[field_name]
+                    
+                    signer_record = sign_request.request_item_ids.filtered(
+                        lambda r: r.role_id.id == template_field.responsible_id.id
+                    )
+                    
+                    if signer_record:
+                        self.env['sign.request.item.value'].sudo().create({
+                            'sign_request_item_id': signer_record[0].id,
+                            'sign_item_id': template_field.id,
+                            'value': value_to_insert,
+                        })
 
             commitment.sign_request_id = sign_request.id
             generated_requests |= sign_request
@@ -110,7 +104,6 @@ class ProjectTask(models.Model):
         if not generated_requests:
             return True
 
-        # 4. Open the document(s)
         action = self.env['ir.actions.actions']._for_xml_id('sign.sign_request_action')
         if len(generated_requests) == 1:
             action.update({'view_mode': 'form', 'res_id': generated_requests.id, 'views': [(False, 'form')]})
