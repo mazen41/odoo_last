@@ -104,10 +104,12 @@
         <field name="model">project.task</field>
         <field name="inherit_id" ref="project.view_task_kanban"/>
         <field name="arch" type="xml">
-            <xpath expr="//kanban" position="inside">
+            <!-- تعريف الحقل قبل جزء القوالب ليتم قراءته في واجهة كانبان -->
+            <xpath expr="//templates" position="before">
                 <field name="is_current_user_assigned"/>
             </xpath>
-            <xpath expr="//div[hasclass('oe_kanban_global_click')]" position="attributes">
+            <!-- استهداف العنصر الأب في Odoo 17 مباشرة بدون البحث عن الكلاس -->
+            <xpath expr="//t[@t-name='kanban-box']/div" position="attributes">
                 <attribute name="t-attf-style">#{record.is_current_user_assigned.raw_value ? '' : 'pointer-events: none; opacity: 0.6;'}</attribute>
             </xpath>
         </field>
