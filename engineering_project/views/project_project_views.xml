@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
     <!-- ============================================= -->
     <!--  1. MAIN PROJECT FORM (TEAM & BUTTONS)         -->
     <!-- ============================================= -->
@@ -11,6 +9,7 @@
         <field name="arch" type="xml">
             
             <xpath expr="//header" position="inside">
+                <!-- ODOO 17 SYNTAX: Use 'invisible' attribute directly -->
                 <button name="action_start_workflow" 
                         string="بدء سير العمل (Start Workflow)" 
                         type="object" 
@@ -22,7 +21,10 @@
             <xpath expr="//field[@name='partner_id']" position="after">
                 <field name="sale_order_id" readonly="1"/>
                 
+                <!-- This field is now required for the button's visibility -->
                 <field name="workflow_started" invisible="1"/>
+                
+                <!-- The new field to track progress (can be left hidden) -->
                 <field name="triggered_steps" invisible="1"/>
                 
                 <group string="فريق العمل (Project Team)">
@@ -60,7 +62,6 @@
         </field>
     </record>
 
-
     <!-- ====================================================== -->
     <!--  2. TASK FORM (BUTTONS AND DYNAMIC CHECKLIST TABS)     -->
     <!-- ====================================================== -->
@@ -72,48 +73,39 @@
             
             <xpath expr="//header" position="inside">
                 <button name="%(engineering_project.action_report_initial_design_form)d" 
-                        string="طباعة نموذج المشروع (Print PDF)" 
-                        type="action" 
-                        class="btn-primary"/>
-
+                        string="طباعة نموذج المشروع (Print PDF)" type="action" class="btn-primary"/>
                 <button name="action_send_task_form_whatsapp" 
-                        string="إرسال واتساب (WhatsApp)" 
-                        type="object" 
-                        class="btn-success" 
-                        icon="fa-whatsapp"/>
-
+                        string="إرسال واتساب (WhatsApp)" type="object" class="btn-success" icon="fa-whatsapp"/>
                 <button name="action_view_parent_project"
-                        string="الذهاب للمشروع (Go to Project)" 
-                        type="object" 
-                        icon="fa-briefcase"/>
+                        string="الذهاب للمشروع (Go to Project)" type="object" icon="fa-briefcase"/>
             </xpath>
 
             <xpath expr="//notebook" position="inside">
                 <page string="نموذج مكونات المشروع" name="project_details_form">
-                    
+                    <!-- HIDDEN WORKFLOW TRIGGER -->
                     <field name="workflow_step" invisible="1"/>
                     
-                    <group>
-                        <group>
-                            <field name="project_components_completed" widget="boolean_toggle"/>
-                        </group>
-                    </group>
+                    <div class="mb-3 mt-2">
+                        <button name="action_load_default_phases" type="object" 
+                                string="تحميل المراحل الافتراضية (Load Default Phases)" 
+                                class="btn-secondary" icon="fa-list-ol"
+                                invisible="phase_ids != []"/>
+                        <span class="text-muted ms-3">
+                            <i class="fa fa-info-circle"/> للمشاريع الاستثمارية/التجارية، يمكنك إضافة أدوار ومراحل جديدة يدوياً من الأسفل.
+                        </span>
+                    </div>
 
-                    <group string="تفاصيل ومكونات المشروع">
-                        <field name="project_components_text" 
-                               widget="text" 
-                               nolabel="1" 
-                               placeholder="اكتب مكونات وتفاصيل المشروع هنا بوضوح..." 
-                               style="min-height: 250px; font-size: 15px;"/>
-                    </group>
-
+                    <!-- DYNAMIC CHECKLIST TABLE -->
+                    <field name="phase_ids" context="{'default_task_id': active_id}">
+                        <tree editable="bottom" decoration-success="is_completed==True" decoration-muted="is_completed==False">
+                            <field name="sequence" widget="handle"/>
+                            <field name="floor_category" placeholder="مثال: الدور الثالث"/>
+                            <field name="name" placeholder="مثال: مرحلة أعمدة الدور الثالث"/>
+                            <field name="is_completed" widget="boolean_toggle"/>
+                        </tree>
+                    </field>
                 </page>
             </xpath>
-
         </field>
     </record>
-
-
-   
-
 </odoo>
