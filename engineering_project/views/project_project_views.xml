@@ -1,118 +1,112 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
-    <!--
-    =================================================
-    1. Add "Commitments" Tab to the TASK Form View
-    =================================================
-    This is the original code you provided. It correctly
-    adds the tab to the project.task model.
-    -->
-    <record id="project_task_view_form_inherit_commitments" model="ir.ui.view">
-        <field name="name">project.task.form.inherit.commitments</field>
-        <field name="model">project.task</field>
-        <field name="inherit_id" ref="project.view_task_form2"/>
-        <field name="arch" type="xml">
-            
-            <xpath expr="//notebook" position="inside">
-                <page string="Commitments (تعهدات)" name="engineering_commitments">
-                    
-                    <!-- Buttons -->
-                    <div class="mb-3">
-                        <button name="action_load_commitments"
-                                type="object"
-                                string="Load Templates"
-                                class="btn-primary"
-                                icon="fa-download"/>
-
-                        <button name="action_generate_commitments_pdf"
-                                type="object"
-                                string="Generate PDFs"
-                                class="btn-success ms-2"
-                                icon="fa-file-pdf-o"/>
-                    </div>
-
-                    <!-- Table -->
-                    <field name="commitment_ids">
-                        <tree editable="bottom">
-                            <field name="sign_template_id"
-                                   domain="[('is_commitment', '=', True)]"
-                                   options="{'no_create': True}"/>
-
-                            <field name="is_required" widget="boolean_toggle"/>
-
-                            <field name="sign_request_id" readonly="1"/>
-
-                            <!-- 🔥 SIGN BUTTON -->
-                            <button name="action_sign_now"
-                                    type="object"
-                                    string="Sign Now"
-                                    class="btn-primary"
-                                    attrs="{'invisible': [('sign_request_id','=',False)]}"/>
-                        </tree>
-                    </field>
-
-                </page>
-            </xpath>
-
-        </field>
-    </record>
-
-    <!--
-    ====================================================
-    2. Add "Commitments" Tab to the main PROJECT Form View
-    ====================================================
-    This new record adds the same tab to the main
-    project.project model.
-    -->
-    <record id="project_project_view_form_inherit_commitments" model="ir.ui.view">
-        <field name="name">project.project.form.inherit.commitments</field>
+    <!-- ============================================= -->
+    <!--  1. MAIN PROJECT FORM (TEAM & BUTTONS)         -->
+    <!-- ============================================= -->
+    <record id="edit_project_form_engineering" model="ir.ui.view">
+        <field name="name">project.project.form.engineering</field>
         <field name="model">project.project</field>
         <field name="inherit_id" ref="project.edit_project"/>
         <field name="arch" type="xml">
             
-            <xpath expr="//notebook" position="inside">
-                <page string="Commitments (تعهدات)" name="engineering_commitments">
-                    
-                    <!-- Buttons -->
-                    <div class="mb-3">
-                        <button name="action_load_commitments"
-                                type="object"
-                                string="Load Templates"
-                                class="btn-primary"
-                                icon="fa-download"/>
-
-                        <button name="action_generate_commitments_pdf"
-                                type="object"
-                                string="Generate PDFs"
-                                class="btn-success ms-2"
-                                icon="fa-file-pdf-o"/>
-                    </div>
-
-                    <!-- Table -->
-                    <field name="commitment_ids">
-                        <tree editable="bottom">
-                            <field name="sign_template_id"
-                                   domain="[('is_commitment', '=', True)]"
-                                   options="{'no_create': True}"/>
-
-                            <field name="is_required" widget="boolean_toggle"/>
-
-                            <field name="sign_request_id" readonly="1"/>
-
-                            <!-- 🔥 SIGN BUTTON -->
-                            <button name="action_sign_now"
-                                    type="object"
-                                    string="Sign Now"
-                                    class="btn-primary"
-                                    attrs="{'invisible': [('sign_request_id','=',False)]}"/>
-                        </tree>
-                    </field>
-
-                </page>
+            <xpath expr="//header" position="inside">
+                <!-- ODOO 17 SYNTAX: Use 'invisible' attribute directly -->
+                <button name="action_start_workflow" 
+                        string="بدء سير العمل (Start Workflow)" 
+                        type="object" 
+                        class="btn-primary" 
+                        invisible="workflow_started == True or id == False"
+                        help="Creates the initial tasks for this project's workflow."/>
             </xpath>
 
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="sale_order_id" readonly="1"/>
+                
+                <!-- This field is now required for the button's visibility -->
+                <field name="workflow_started" invisible="1"/>
+                
+                <!-- The new field to track progress (can be left hidden) -->
+                <field name="triggered_steps" invisible="1"/>
+                
+                <group string="فريق العمل (Project Team)">
+                    <group>
+                        <field name="architect_id"/>
+                        <field name="structural_id"/>
+                        <field name="electrical_id"/>
+                        <field name="draftsman_id"/>
+                    </group>
+                    <group>
+                        <field name="secretary_id"/>
+                        <field name="accountant_id"/>
+                        <field name="facade_draftsman_id"/>
+                        <field name="muni_draftsman_id"/>
+                    </group>
+                </group>
+
+                <group string="بيانات الموقع (Site Details)">
+                    <group>
+                        <field name="building_type"/>
+                        <field name="service_type"/>
+                        <field name="governorate_id" options="{'no_create': True, 'no_open': True}"/>
+                        <field name="region_id" 
+                               domain="[('governorate_id', '=', governorate_id)]" 
+                               options="{'no_create': True, 'no_open': True}"/>
+                        <field name="area"/>
+                    </group>
+                    <group>
+                        <field name="plot_no"/>
+                        <field name="block_no"/>
+                        <field name="street_no"/>
+                    </group>
+                </group>
+            </xpath>
         </field>
     </record>
 
+    <!-- ====================================================== -->
+    <!--  2. TASK FORM (BUTTONS AND DYNAMIC CHECKLIST TABS)     -->
+    <!-- ====================================================== -->
+    <record id="view_task_form2_engineering_extended" model="ir.ui.view">
+        <field name="name">project.task.form.engineering.extended</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_form2"/>
+        <field name="arch" type="xml">
+            
+            <xpath expr="//header" position="inside">
+                <button name="%(engineering_project.action_report_initial_design_form)d" 
+                        string="طباعة نموذج المشروع (Print PDF)" type="action" class="btn-primary"/>
+                <button name="action_send_task_form_whatsapp" 
+                        string="إرسال واتساب (WhatsApp)" type="object" class="btn-success" icon="fa-whatsapp"/>
+                <button name="action_view_parent_project"
+                        string="الذهاب للمشروع (Go to Project)" type="object" icon="fa-briefcase"/>
+            </xpath>
+
+            <xpath expr="//notebook" position="inside">
+                <page string="نموذج مكونات المشروع" name="project_details_form">
+                    <!-- HIDDEN WORKFLOW TRIGGER -->
+                    <field name="workflow_step" invisible="1"/>
+                    
+                    <div class="mb-3 mt-2">
+                        <button name="action_load_default_phases" type="object" 
+                                string="تحميل المراحل الافتراضية (Load Default Phases)" 
+                                class="btn-secondary" icon="fa-list-ol"
+                                invisible="phase_ids != []"/>
+                        <span class="text-muted ms-3">
+                            <i class="fa fa-info-circle"/> للمشاريع الاستثمارية/التجارية، يمكنك إضافة أدوار ومراحل جديدة يدوياً من الأسفل.
+                        </span>
+                    </div>
+
+                    <!-- DYNAMIC CHECKLIST TABLE -->
+                    <field name="phase_ids" context="{'default_task_id': active_id}">
+                        <tree editable="bottom" decoration-success="is_completed==True" decoration-muted="is_completed==False">
+                            <field name="sequence" widget="handle"/>
+                            <field name="floor_category" placeholder="مثال: الدور الثالث"/>
+                            <field name="name" placeholder="مثال: مرحلة أعمدة الدور الثالث"/>
+                            <field name="is_completed" widget="boolean_toggle"/>
+                        </tree>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
 </odoo>
