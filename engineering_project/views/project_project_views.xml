@@ -122,23 +122,14 @@
         <field name="model">project.task</field>
         <field name="inherit_id" ref="project.view_task_kanban"/>
         <field name="arch" type="xml">
-
-            <!-- Add field to kanban -->
-            <xpath expr="//kanban" position="inside">
+            <!-- التأكد من استخدام اسم الحقل الصحيح الموجود في البايثون -->
+            <xpath expr="//templates" position="before">
                 <field name="is_current_user_assigned"/>
             </xpath>
-
-            <!-- Define style condition -->
-            <xpath expr="//kanban/templates/t[@t-name='kanban-box']" position="inside">
-                <t t-set="disabled_style"
-                   t-value="'' if record.is_current_user_assigned.raw_value else 'pointer-events: none; opacity: 0.6;'"/>
+            
+            <xpath expr="//t[@t-name='kanban-box']/div" position="attributes">
+                <attribute name="t-attf-style">#{record.is_current_user_assigned.raw_value ? '' : 'pointer-events: none; opacity: 0.6;'}</attribute>
             </xpath>
-
-            <!-- Apply to main card -->
-            <xpath expr="//kanban/templates/t[@t-name='kanban-box']//div[contains(@class, 'o_kanban_record')]" position="attributes">
-                <attribute name="t-att-style">disabled_style</attribute>
-            </xpath>
-
         </field>
     </record>
 
