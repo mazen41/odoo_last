@@ -1,2 +1,2 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_engineering_project_commitment,Engineering Project Commitment Access,engineering_commitments.model_engineering_project_commitment,base.group_user,1,1,1,1
+access_eng_project_commitment_user,Engineering Project Commitment User,model_engineering_project_commitment,base.group_user,1,1,1,1
