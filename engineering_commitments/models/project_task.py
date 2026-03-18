@@ -103,7 +103,6 @@ class ProjectProject(models.Model):
                             'sign_request_item_id': signer[0].id,
                             'sign_item_id': item.id,
                             'value': value,
-                            'value_text': value,
                         })
 
             commitment.sign_request_id = sign_request.id
@@ -201,11 +200,10 @@ class ProjectTask(models.Model):
                     )
                     if signer:
                         self.env['sign.request.item.value'].sudo().create({
-                            'sign_request_id': sign_request.id,
-                            'sign_request_item_id': signer[0].id,
-                            'sign_item_id': item.id,
-                            'value': value,
-                            'value_text': value,
+                                'sign_request_id': sign_request.id,
+                                'sign_request_item_id': signer[0].id,
+                                'sign_item_id': item.id,
+                                'value': value,
                         })
             commitment.sign_request_id = sign_request.id
         return True
