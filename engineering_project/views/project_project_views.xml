@@ -60,7 +60,7 @@
     </record>
 
     <!-- ====================================================== -->
-    <!--  2. TASK FORM (BUTTONS AND DETAILS TEXTAREA)           -->
+    <!--  2. TASK FORM (BUTTONS AND DYNAMIC CHECKLIST TABS)     -->
     <!-- ====================================================== -->
     <record id="view_task_form2_engineering_extended" model="ir.ui.view">
         <field name="name">project.task.form.engineering.extended</field>
@@ -80,27 +80,16 @@
             <xpath expr="//notebook" position="inside">
                 <page string="نموذج مكونات المشروع" name="project_details_form">
                     <field name="workflow_step" invisible="1"/>
-                    <field name="is_assigned_to_me" invisible="1"/>
                     
-                    <div class="mb-3 mt-2">
-                        <span class="text-muted ms-3">
-                            <i class="fa fa-info-circle"/> يرجى كتابة مكونات المشروع والتفاصيل الإضافية هنا، ثم تحديد خيار "تم الانتهاء".
-                        </span>
-                    </div>
-
-                    <!-- TEXT AREA FIELD FOR PROJECT DETAILS -->
                     <group>
-                        <field name="project_details_text" 
-                               widget="text" 
-                               placeholder="اكتب تفاصيل ومكونات المشروع هنا..." 
-                               nolabel="1" 
-                               colspan="2" 
-                               style="min-height: 250px; font-size: 15px;"/>
+                        <group>
+                            <field name="project_components_completed" widget="boolean_toggle"/>
+                        </group>
                     </group>
-                    
-                    <!-- CHECKBOX -->
-                    <group>
-                        <field name="project_details_completed" widget="boolean_toggle"/>
+                    <group string="تفاصيل ومكونات المشروع">
+                        <field name="project_components_text" widget="text" nolabel="1" 
+                               placeholder="اكتب مكونات وتفاصيل المشروع هنا بوضوح..." 
+                               style="min-height: 250px; font-size: 15px;"/>
                     </group>
                 </page>
             </xpath>
@@ -108,26 +97,19 @@
     </record>
 
     <!-- ====================================================== -->
-    <!--  3. KANBAN VIEW (DISABLE UNASSIGNED TASKS)             -->
+    <!--  3. TASK KANBAN (DISABLE UNASSIGNED TASKS)             -->
     <!-- ====================================================== -->
-    <record id="view_task_kanban_engineering_extended" model="ir.ui.view">
-        <field name="name">project.task.kanban.engineering.extended</field>
+    <record id="view_task_kanban_engineering_disable" model="ir.ui.view">
+        <field name="name">project.task.kanban.engineering.disable</field>
         <field name="model">project.task</field>
         <field name="inherit_id" ref="project.view_task_kanban"/>
         <field name="arch" type="xml">
-            
             <xpath expr="//kanban" position="inside">
-                <field name="is_assigned_to_me"/>
+                <field name="is_current_user_assigned"/>
             </xpath>
-
-            <!-- 
-                هذا الكود السحري يجعل أي بطاقة لمهمة غير معينة للموظف الحالي 
-                باهتة قليلاً وتمنعه من الضغط عليها أو سحبها!
-            -->
-            <xpath expr="//t[@t-name='kanban-box']//div[1]" position="attributes">
-                <attribute name="t-attf-style">#{record.is_assigned_to_me.raw_value ? '' : 'pointer-events: none; opacity: 0.55;'}</attribute>
+            <xpath expr="//div[hasclass('oe_kanban_global_click')]" position="attributes">
+                <attribute name="t-attf-style">#{record.is_current_user_assigned.raw_value ? '' : 'pointer-events: none; opacity: 0.6;'}</attribute>
             </xpath>
-            
         </field>
     </record>
 </odoo>
