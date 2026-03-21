@@ -14,8 +14,9 @@ try:
     # Register the Amiri font that we installed via apt_packages.txt
     # The path to system fonts in Debian/Ubuntu is usually here.
     try:
+        # This will only run once when Odoo starts.
         pdfmetrics.registerFont(TTFont('Amiri', '/usr/share/fonts/truetype/amiri/Amiri-Regular.ttf'))
-        _logger.info("Successfully registered Amiri font with reportlab.")
+        _logger.info("Successfully registered Amiri font with reportlab for Sign App.")
     except Exception as e:
         _logger.error(f"Could not register Amiri font. Path might be wrong. Error: {e}")
 
@@ -25,38 +26,51 @@ except ImportError:
     _logger.warning("Could not import arabic_reshaper, python-bidi, or reportlab components.")
 
 
-# This is the core class Odoo uses to represent a value before printing.
-# We will inherit it and change its behavior.
-class SignRequestItemValue(SignRequestItemValue):
+# --- MONKEY PATCHING STARTS HERE ---
+# We save the original functions first.
+original_get_cairo_font_name_and_size = SignRequestItemValue._get_cairo_font_name_and_size
+original_get_resampled_value = SignRequestItemValue._get_resampled_value
 
-    def _get_cairo_font_name_and_size(self, font_name='Helvetica', font_size=12, box_height=20):
-        """
-        Force the font to be Amiri if Arabic is detected. This is a key
-        function for rendering.
-        """
-        if ARABIC_SUPPORT and isinstance(self.value, str):
-            is_arabic = any('\u0600' <= char <= '\u06FF' for char in self.value)
-            if is_arabic:
-                _logger.info("Arabic detected, forcing font to Amiri.")
-                # Return 'Amiri' instead of the default font.
-                return 'Amiri', min(font_size, box_height) * 0.8
-        
-        # If not Arabic, use the original Odoo function.
-        return super()._get_cairo_font_name_and_size(font_name, font_size, box_height)
 
-    def _get_resampled_value(self):
-        """
-        This is the final function that gets the text value. We will
-        reshape the text here.
-        """
-        value = super()._get_resampled_value()
-        
-        if ARABIC_SUPPORT and isinstance(value, str):
-            is_arabic = any('\u0600' <= char <= '\u06FF' for char in value)
-            if is_arabic:
-                _logger.info(f"Reshaping Arabic value: {value}")
-                reshaped_text = arabic_reshaper.reshape(value)
-                bidi_text = get_display(reshaped_text)
-                return bidi_text
-        
-        return value
+def _get_cairo_font_name_and_size_arabic(self, font_name='Helvetica', font_size=12, box_height=20):
+    """
+    This is our new function to force the font to be Amiri if Arabic is detected.
+    """
+    if ARABIC_SUPPORT and isinstance(self.value, str):
+        is_arabic = any('\u0600' <= char <= '\u06FF' for char in self.value)
+        if is_arabic:
+            _logger.info("Arabic detected, forcing font to Amiri.")
+            # Return 'Amiri' instead of the default font.
+            return 'Amiri', min(font_size, box_height) * 0.8
+    
+    # If not Arabic, call the original Odoo function.
+    return original_get_cairo_font_name_and_size(self, font_name, font_size, box_height)
+
+
+def _get_resampled_value_arabic(self):
+    """
+    This is our new function to reshape the text before it gets rendered.
+    """
+    # First, get the value from the original Odoo function.
+    value = original_get_resampled_value(self)
+    
+    if ARABIC_SUPPORT and isinstance(value, str):
+        is_arabic = any('\u0600' <= char <= '\u06FF' for char in value)
+        if is_arabic:
+            _logger.info(f"Reshaping Arabic value: {value}")
+            reshaped_text = arabic_reshaper.reshape(value)
+            bidi_text = get_display(reshaped_text)
+            return bidi_text
+    
+    return value
+
+
+# Now, we replace the original Odoo functions with our new patched versions.
+SignRequestItemValue._get_cairo_font_name_and_size = _get_cairo_font_name_and_size_arabic
+SignRequestItemValue._get_resampled_value = _get_resampled_value_arabic
+
+
+# We still need this empty class definition so Odoo recognizes the file as valid.
+class SignRequestItem(models.Model):
+    _inherit = 'sign.request.item'
+    pass
