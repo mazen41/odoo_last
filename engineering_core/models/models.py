@@ -24,12 +24,7 @@ class EngineeringPackage(models.Model):
     _description = 'Engineering Package'
 
     name = fields.Char(string="اسم الباقة الهندسية", required=True)
-    code = fields.Char(string="كود الباقة", copy=False, default='جديد') # Example: Add a code
-    # You can add other fields relevant to an engineering package here, e.g.:
-    # description = fields.Text(string="وصف الباقة")
-    # price = fields.Float(string="السعر")
-    # active = fields.Boolean(string="نشط", default=True)
-
+    code = fields.Char(string="كود الباقة", copy=False, default='جديد')
 
 # ==============================================================================
 #  RES PARTNER (Customer Profile)
@@ -45,15 +40,11 @@ class ResPartner(models.Model):
     street_no = fields.Char(string="الضاحيه")
     area = fields.Char(string="مساحة الارض (Area)")
     
+    # أضفنا الحقل هنا ليتم حفظه في بيانات العميل الأساسية
+    electricity_receipt = fields.Char(string="إيصال تيار كهرباء")
+
     governorate_id = fields.Many2one('kuwait.governorate', string="المحافظة")
     region_id = fields.Many2one('kuwait.region', string="المنطقة (Region)")
-
-
-# ==============================================================================
-#  CRM LEAD
-# ==============================================================================
-# All custom fields and data-passing functions have been removed. 
-# Odoo will just use the standard Name, Email, Phone, etc.
 
 
 # ==============================================================================
@@ -70,20 +61,20 @@ class SaleOrder(models.Model):
     street_no = fields.Char(string="الضاحيه", store=True)
     area = fields.Char(string="مساحة الارض", store=True)
     
+    # الحقل المطلوب في عرض السعر
+    electricity_receipt = fields.Char(string="إيصال تيار كهرباء", store=True)
+
     governorate_id = fields.Many2one('kuwait.governorate', string="المحافظة", store=True)
     region_id = fields.Many2one('kuwait.region', string="المنطقة (Region)", store=True)
 
-    # ADD THIS FIELD:
     engineering_package_id = fields.Many2one(
-        'engineering.package',  # This links to the new model defined above
+        'engineering.package', 
         string="Engineering Package",
         help="Select the engineering package for this sale order",
-        index=True,
-        ondelete='restrict', # Consider 'set null' if a package can be deleted without breaking sales
         store=True,
     )
 
-    # Automatically pull these details from the Customer when creating a Quotation
+    # تحديث الدالة لتسحب حقل إيصال الكهرباء من العميل تلقائياً
     @api.onchange('partner_id')
     def _onchange_partner_id_engineering_fields(self):
         if self.partner_id:
@@ -95,5 +86,23 @@ class SaleOrder(models.Model):
             self.area = self.partner_id.area
             self.governorate_id = self.partner_id.governorate_id
             self.region_id = self.partner_id.region_id
-            # You might also want to set a default engineering_package_id here
-            # if there's a logic for that, but it's optional.
+            # سحب القيمة من ملف العميل
+            self.electricity_receipt = self.partner_id.electricity_receipt
+
+
+# ==============================================================================
+#  PROJECT PROJECT (لحل مشكلة الـ RPC Error)
+# ==============================================================================
+class ProjectProject(models.Model):
+    _inherit = 'project.project'
+
+    # يجب إضافة الحقل هنا أيضاً لأن دالة إنشاء المشروع تحاول إرسال القيمة لهذا الموديل
+    electricity_receipt = fields.Char(string="إيصال تيار كهرباء")
+    
+    # الحقول الأخرى التي قد تحتاجها في المشروع لتجنب أخطاء مشابهة
+    plot_no = fields.Char(string="رقم القسيمة")
+    block_no = fields.Char(string="القطعة")
+    street_no = fields.Char(string="الضاحيه")
+    area = fields.Char(string="المساحة")
+    building_type = fields.Selection([('residential', 'سكن خاص'), ('investment', 'استثماري'), ('commercial', 'تجاري'), ('industrial', 'صناعي'), ('cooperative', 'جمعيات وتعاونيات'), ('mosque', 'مساجد'), ('hangar', 'مخازن / شبرات'), ('farm', 'مزارع')], string="نوع العقار")
+    service_type = fields.Selection([('new_construction', 'بناء جديد'), ('demolition', 'هدم'), ('modification', 'تعديل'), ('addition', 'اضافة'), ('addition_modification', 'تعديل واضافة'), ('supervision_only', 'إشراف هندسي فقط'), ('renovation', 'ترميم'), ('internal_partitions', 'قواطع داخلية'), ('shades_garden', 'مظلات / حدائق')], string="نوع الخدمة")
