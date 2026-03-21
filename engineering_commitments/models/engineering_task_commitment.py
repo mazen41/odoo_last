@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+from odoo import models, fields, api, _
+from odoo.exceptions import UserError
+
 class EngineeringTaskCommitment(models.Model):
     _name = 'engineering.task.commitment'
     _description = 'Task Commitment'
@@ -11,20 +15,27 @@ class EngineeringTaskCommitment(models.Model):
         self.ensure_one()
         if not self.sign_request_id:
             raise UserError(_("No generated document yet."))
+            
         request = self.sign_request_id
         user = self.env.user
+        
+        # Check permissions
         is_admin = user.has_group('base.group_system')
+        # Check if user has a secretary_id (using getattr to avoid errors if field doesn't exist)
         is_secretary = bool(getattr(user, 'secretary_id', False))
+        
         if is_admin or is_secretary:
             request_item = request.request_item_ids[:1]
         else:
             request_item = request.request_item_ids.filtered(
                 lambda r: r.partner_id.id == user.partner_id.id
             )
+            
         if not request_item:
             raise UserError(_("You are not assigned to sign this document."))
+            
         return {
             'type': 'ir.actions.act_url',
-            'url': f'/sign/document/{request.id}/{request_item.access_token}',
+            'url': f'/sign/document/{request.id}/{request_item[0].access_token}',
             'target': 'new',
-        } 
+        }
